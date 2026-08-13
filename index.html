@@ -3,17 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAN-TEN Language Center | Automated Booking System</title>
+    <title>MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER</title>
+    <link href="https://fonts.googleapis.com/css2?family=Segoe+UI:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
         :root {
             --pastel-pink: #FFF0F2;
             --pastel-blue: #E6F0FA;
-            --pastel-green: #E8F7EE;
             --pastel-yellow: #FFF9E6;
-            --pastel-grey: #F4F5F7;
-            --primary-accent: #4A6984;
+            --pastel-green: #E6F5EA;
+            --navy-blue: #1A365D;
+            --gold: #D4AF37;
             --text-dark: #333F48;
-            --white: #FFFFFF;
+            --text-muted: #718096;
+            --border-color: #E2E8F0;
         }
 
         * {
@@ -24,409 +26,643 @@
         }
 
         body {
-            background-color: var(--pastel-grey);
+            background-color: #F8FAFC;
             color: var(--text-dark);
             line-height: 1.6;
+            padding-bottom: 60px;
         }
 
-        header {
+        /* --- Header & Navigation --- */
+        .header-bg {
             background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-pink));
-            padding: 40px 20px;
-            text-align: center;
-            border-bottom: 4px solid var(--white);
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            border-bottom: 3px solid var(--gold);
+            padding: 20px;
+            position: relative;
         }
 
-        header h1 {
-            color: var(--primary-accent);
-            font-size: 2.2rem;
-            margin-bottom: 10px;
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
         }
 
-        header p {
-            font-size: 1.1rem;
-            color: #607282;
+        .brand-section {
+            display: flex;
+            align-items: center;
+            gap: 15px;
         }
 
-        .container {
-            max-width: 1100px;
+        .logo-placeholder {
+            width: 60px;
+            height: 60px;
+            background-color: var(--navy-blue);
+            color: #FFF;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            border-radius: 8px;
+            border: 2px solid var(--gold);
+        }
+
+        .company-name {
+            font-size: 1.5rem;
+            color: var(--navy-blue);
+            font-weight: 700;
+        }
+
+        .clocks-panel {
+            display: flex;
+            gap: 20px;
+            background: rgba(255, 255, 255, 0.7);
+            padding: 10px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            font-size: 0.9rem;
+        }
+
+        .clock-item span {
+            display: block;
+            font-weight: 600;
+            color: var(--navy-blue);
+        }
+
+        .ticker-container {
+            max-width: 1200px;
+            margin: 15px auto 0 auto;
+            background: #FFF;
+            padding: 10px;
+            border-radius: 6px;
+            border-left: 4px solid var(--navy-blue);
+            font-size: 0.9rem;
+        }
+
+        .nav-bar {
+            background-color: var(--navy-blue);
+            padding: 12px;
+        }
+
+        .nav-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            gap: 20px;
+        }
+
+        .nav-item {
+            color: #FFF;
+            text-decoration: none;
+            font-weight: 600;
+            font-size: 0.95rem;
+            padding: 6px 12px;
+            border-radius: 4px;
+            transition: background 0.2s;
+        }
+
+        .nav-item.active, .nav-item:hover {
+            background-color: rgba(255, 255, 255, 0.2);
+        }
+
+        /* --- Main Wizard Steps Layout --- */
+        .wizard-container {
+            max-width: 900px;
             margin: 30px auto;
-            padding: 0 20px;
+            background: #FFF;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            padding: 30px;
         }
 
-        .grid-layout {
+        .step-panel {
+            display: none;
+        }
+
+        .step-panel.active {
             display: block;
         }
 
-        .card {
-            background-color: var(--white);
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
-            border: 1px solid rgba(0,0,0,0.03);
-        }
-
-        .card-title {
-            font-size: 1.4rem;
-            color: var(--primary-accent);
+        h2.section-title {
+            color: var(--navy-blue);
+            border-bottom: 2px solid var(--pastel-pink);
+            padding-bottom: 10px;
             margin-bottom: 20px;
-            border-left: 5px solid var(--primary-accent);
-            padding-left: 10px;
+            font-size: 1.4rem;
         }
 
-        /* Interactive Dynamic Catalog Layout */
-        .catalog-grid {
-            display: table;
-            width: 100%;
-            border-collapse: separate;
-            border-spacing: 15px;
-        }
-
-        .catalog-row {
-            display: table-row;
-        }
-
-        .catalog-item {
-            display: table-cell;
-            background-color: var(--pastel-green);
-            padding: 20px;
-            border-radius: 10px;
-            width: 33.33%;
-            vertical-align: top;
-            border: 2px solid var(--white);
-            transition: all 0.2s ease;
-        }
-
-        .catalog-item.yellow-theme { background-color: var(--pastel-yellow); }
-        .catalog-item.blue-theme { background-color: var(--pastel-blue); }
-        .catalog-item.pink-theme { background-color: var(--pastel-pink); }
-
-        .price-badge {
-            display: inline-block;
-            background-color: var(--white);
-            padding: 4px 12px;
-            border-radius: 20px;
-            font-weight: bold;
-            margin: 10px 0;
-            color: var(--primary-accent);
-        }
-
-        /* Semantic Form Elements Styling */
+        /* --- Form Elements --- */
         .form-group {
             margin-bottom: 20px;
         }
 
         label {
             display: block;
-            margin-bottom: 6px;
             font-weight: 600;
-            font-size: 0.95rem;
+            margin-bottom: 8px;
+            color: var(--text-dark);
         }
 
-        input, select, textarea {
+        select, input[type="text"], input[type="email"], input[type="tel"], input[type="date"] {
             width: 100%;
             padding: 12px;
-            border: 2px solid var(--pastel-grey);
-            border-radius: 8px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
             font-size: 1rem;
-            background-color: var(--pastel-grey);
+            outline: none;
             transition: border-color 0.2s;
         }
 
-        input:focus, select:focus, textarea:focus {
-            outline: none;
-            border-color: var(--primary-accent);
-            background-color: var(--white);
+        select:focus, input:focus {
+            border-color: var(--navy-blue);
         }
 
-        button {
-            background-color: var(--primary-accent);
-            color: var(--white);
-            padding: 14px 28px;
-            border: none;
+        .grid-3 {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1-fraction));
+            gap: 15px;
+        }
+
+        /* --- Custom Cards --- */
+        .summary-card {
+            background-color: var(--pastel-pink);
+            border: 1px solid #FFD1D7;
             border-radius: 8px;
-            font-size: 1.1rem;
-            font-weight: bold;
-            cursor: pointer;
-            transition: opacity 0.2s;
+            padding: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed rgba(0,0,0,0.05);
+        }
+
+        .summary-row:last-child {
+            border-bottom: none;
+        }
+
+        .price-display {
+            font-size: 1.4rem;
+            font-weight: 700;
+            color: #D32F2F;
+        }
+
+        .info-text-gray {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 4px;
+        }
+
+        /* --- Buttons --- */
+        .btn-action {
+            display: block;
             width: 100%;
-        }
-
-        button:hover {
-            opacity: 0.9;
-        }
-
-        /* Status States Alert Windows */
-        .alert {
+            background-color: var(--navy-blue);
+            color: #FFF;
+            border: none;
             padding: 15px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            display: none;
-            font-weight: 500;
+            font-size: 1.1rem;
+            font-weight: 600;
+            text-align: center;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background 0.2s;
+            margin-top: 25px;
         }
-        .alert-success { background-color: var(--pastel-green); color: #2E5A44; border: 1px solid #C2EAD3; }
-        .alert-danger { background-color: var(--pastel-pink); color: #8A2B37; border: 1px solid #F9D2D7; }
 
-        @media (max-width: 768px) {
-            .catalog-grid, .catalog-row, .catalog-item {
-                display: block;
-                width: 100%;
-            }
-            .catalog-item { margin-bottom: 15px; }
+        .btn-action:hover {
+            background-color: #112440;
+        }
+
+        /* --- Upload Fields --- */
+        .upload-box {
+            border: 2px dashed var(--border-color);
+            padding: 20px;
+            text-align: center;
+            background: #FAFAFA;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* --- Success Screen --- */
+        .success-box {
+            text-align: center;
+            padding: 20px;
+            background-color: var(--pastel-green);
+            border: 1px solid #C3E6CB;
+            color: #155724;
+            border-radius: 8px;
+            margin-bottom: 25px;
+        }
+
+        .success-title {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
     </style>
 </head>
 <body>
 
-    <header>
-        <h1 id="metaTitle">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER</h1>
-        <p>100％合格! | MAN-TEN 100% PASS </p>
+    <!-- UI Background Header & Branding Setup -->
+    <header class="header-bg">
+        <div class="header-container">
+            <div class="brand-section">
+                <div class="logo-placeholder">MAN-TEN</div>
+                <div>
+                    <h1 class="company-name">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER</h1>
+                    <p style="font-size: 0.85rem; color: var(--text-muted);">100％合格! | MAN-TEN 100% PASS</p>
+                </div>
+            </div>
+            
+            <!-- Real-time Automatic System Time Clocks -->
+            <div class="clocks-panel">
+                <div class="clock-item">
+                    <span>PHILIPPINES (PST)</span>
+                    <div id="ph-clock">Loading...</div>
+                </div>
+                <div class="clock-item">
+                    <span>JAPAN (JST)</span>
+                    <div id="jp-clock">Loading...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Information Ticker Items -->
+        <div class="ticker-container">
+            <strong>Notice:</strong> 1. Full Review Lesson Package: A 6-month program billed on a monthly basis. | 2. All lessons delivered by Native Japanese and Certified Japanese language teachers! | 3. Book a lesson and get a 10% discount! (Limited offer 10 first people)
+        </div>
     </header>
 
-    <div class="container">
-        <div id="statusAlert" class="alert"></div>
-
-        <!-- Bulletin Section -->
-        <div class="card" id="bulletinCard" style="display:none;">
-            <div class="card-title">Latest Announcements</div>
-            <div id="bulletinContainer"></div>
+    <!-- Navigation Bar Setup -->
+    <nav class="nav-bar">
+        <div class="nav-container">
+            <a href="#" class="nav-item">Home</a>
+            <a href="#" class="nav-item">News and Bulletin</a>
+            <a href="#" class="nav-item active">Class Catalog</a>
+            <a href="#" class="nav-item">Class Schedule</a>
+            <a href="#" class="nav-item">My Class</a>
         </div>
+    </nav>
 
-        <div class="grid-layout">
-            <!-- Catalog Element -->
-            <div class="card">
-                <div class="card-title">Available Language Programs</div>
-                <div id="catalogLoading">Connecting to core database cluster...</div>
-                <div class="catalog-grid" id="catalogGrid"></div>
+    <!-- Unified Registration Workflow System -->
+    <main class="wizard-container">
+
+        <!-- STEP 1: CLASS CATALOG SELECTOR -->
+        <section id="step-catalog" class="step-panel active">
+            <h2 class="section-title">Available Language Programs</h2>
+            
+            <div class="form-group">
+                <label for="student-location">Student Location *</label>
+                <select id="student-location" onchange="updateCatalogOptions()">
+                    <option value="">-- Dropdown Student where they are currently located --</option>
+                    <option value="JAPAN">JAPAN</option>
+                    <option value="PHILIPPINES">PHILIPPINES</option>
+                </select>
             </div>
 
-            <!-- Operations Intake Form -->
-            <div class="card">
-                <div class="card-title">Secure Seat Registration Form</div>
-                <form id="bookingForm" onsubmit="handleFormSubmission(event)">
-                    <div style="display: table; width: 100%; border-collapse: collapse;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell; width: 33.33%; padding-right: 10px;" class="form-group">
-                                <label for="lastName">Last Name *</label>
-                                <input type="text" id="lastName" required placeholder="e.g. SMITH">
-                            </div>
-                            <div style="display: table-cell; width: 33.33%; padding-right: 10px;" class="form-group">
-                                <label for="firstName">First Name *</label>
-                                <input type="text" id="firstName" required placeholder="e.g. DAVID">
-                            </div>
-                            <div style="display: table-cell; width: 33.33%;" class="form-group">
-                                <label for="middleName">Middle Name</label>
-                                <input type="text" id="middleName" placeholder="Optional">
-                            </div>
-                        </div>
-                    </div>
+            <div class="grid-3">
+                <div class="form-group">
+                    <label for="class-type">Class Type *</label>
+                    <select id="class-type" disabled onchange="updateCatalogOptions()">
+                        <option value="">-- Choose Class Type --</option>
+                        <option value="JLPT Preparation">JLPT Preparation</option>
+                        <option value="JFT Preparation">JFT Preparation</option>
+                        <option value="SSW 1 Prometric Preparation">SSW 1 Prometric Preparation</option>
+                        <option value="SSW 2 Prometric Preparation">SSW 2 Prometric Preparation</option>
+                    </select>
+                </div>
 
-                    <div style="display: table; width: 100%; border-collapse: collapse;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell; width: 50%; padding-right: 10px;" class="form-group">
-                                <label for="birthday">Date of Birth *</label>
-                                <input type="date" id="birthday" required>
-                            </div>
-                            <div style="display: table-cell; width: 50%;" class="form-group">
-                                <label for="studentLocation">Geographic Location context *</label>
-                                <select id="studentLocation" required>
-                                    <option value="PHILIPPINES">Philippines (PST Time Sync)</option>
-                                    <option value="JAPAN">Japan (JST Time Sync)</option>
-                                </select>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div style="display: table; width: 100%; border-collapse: collapse;">
-                        <div style="display: table-row;">
-                            <div style="display: table-cell; width: 50%; padding-right: 10px;" class="form-group">
-                                <label for="emailAddress">Email Address *</label>
-                                <input type="email" id="emailAddress" required placeholder="student@example.com">
-                            </div>
-                            <div style="display: table-cell; width: 50%;" class="form-group">
-                                <label for="phoneNumber">Phone Number *</label>
-                                <input type="tel" id="phoneNumber" required placeholder="e.g. 0917XXXXXXX">
-                            </div>
-                        </div>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="classSelect">Target Course Track Selection *</label>
-                        <select id="classSelect" required onchange="updatePriceDetails()">
-                            <option value="">-- Choose a course from catalog --</option>
-                        </select>
-                    </div>
-
-                    <div id="priceDetailBox" class="form-group" style="display:none; background-color: var(--pastel-blue); padding:15px; border-radius:8px; margin-bottom:20px;">
-                        <strong>Calculated Base Matrix Rate:</strong> <span id="displayedPrice"></span>
-                    </div>
-
-                    <div class="form-group">
-                        <label for="proofOfPayment">Attach Proof of Payment (PNG/JPG Base64 Stream) *</label>
-                        <input type="file" id="proofOfPayment" accept="image/*" required>
-                    </div>
-
-                    <button type="submit" id="submitBtn">Commit Verified Reservation</button>
-                </form>
+                <div class="form-group">
+                    <label for="course-level">Level *</label>
+                    <select id="course-level" disabled onchange="calculatePricing()">
+                        <option value="">-- Choose Level --</option>
+                    </select>
+                </div>
             </div>
-        </div>
-    </div>
+
+            <!-- Dynamic Pricing Card Target -->
+            <div id="catalog-summary-box" class="summary-card" style="display: none;">
+                <div class="summary-row"><strong>Selected Course:</strong> <span id="summary-course-display">-</span></div>
+                <div class="summary-row"><strong>Description:</strong> <span id="summary-desc-display" class="info-text-gray">-</span></div>
+                <div class="summary-row"><strong>Price Matrix Amount:</strong> <span id="summary-price-display" class="price-display">-</span></div>
+                <div class="info-text-gray" style="text-align: right;">Including taxes and fees</div>
+                
+                <button class="btn-action" onclick="goToSchedule()">Book Class Now</button>
+            </div>
+        </section>
+
+
+        <!-- STEP 2: CLASS SCHEDULE PICKER -->
+        <section id="step-schedule" class="step-panel">
+            <h2 class="section-title">Class Schedule Picker</h2>
+            
+            <div class="grid-3">
+                <div class="form-group">
+                    <label for="schedule-date">Choose Date *</label>
+                    <input type="date" id="schedule-date" onchange="updateDayOfWeek()">
+                </div>
+                <div class="form-group">
+                    <label for="schedule-day">Day of the Week</label>
+                    <input type="text" id="schedule-day" readonly style="background: #F1F5F9;">
+                </div>
+            </div>
+
+            <div class="form-group" style="margin-top: 15px;">
+                <label for="schedule-time">Dropdown from Chosen Time (Philippine Standard Time) *</label>
+                <select id="schedule-time" onchange="syncJapanTime()">
+                    <option value="">-- Select Available Session Time --</option>
+                    <option value="10:00 AM - 11:30 AM">10:00 AM - 11:30 AM (PST)</option>
+                    <option value="01:00 PM - 02:30 PM">01:00 PM - 02:30 PM (PST)</option>
+                    <option value="04:00 PM - 05:30 PM">04:00 PM - 05:30 PM (PST)</option>
+                </select>
+            </div>
+
+            <div class="form-group">
+                <label>Automatic display of Japan Local Time</label>
+                <input type="text" id="japan-time-display" readonly style="background: #F1F5F9;" placeholder="Calculated JST conversion...">
+            </div>
+
+            <button class="btn-action" onclick="goToPayment()">PROCEED TO PAYMENT</button>
+        </section>
+
+
+        <!-- STEP 3: PAYMENT & PROFILE REGISTRATION -->
+        <section id="step-payment" class="step-panel">
+            <h2 class="section-title">Verify Registration & Complete Payment</h2>
+            
+            <div style="background: var(--pastel-yellow); padding: 15px; border-radius: 6px; margin-bottom: 20px; font-size: 0.9rem;">
+                <strong>Payment Instructions:</strong> Download and install Google Chat, send us a message with your name and the class code. Send the information via Google Chat using this email address: <strong>mantenjp.info@gmail.com</strong>. Then we will message back with a QR code for you to pay.
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Last Name *</label>
+                    <input type="text" id="student-lastname" required placeholder="UPPERCASE ONLY">
+                </div>
+                <div class="form-group">
+                    <label>First Name *</label>
+                    <input type="text" id="student-firstname" required placeholder="UPPERCASE ONLY">
+                </div>
+                <div class="form-group">
+                    <label>Middle Name</label>
+                    <input type="text" id="student-middlename" placeholder="Leave blank if none">
+                </div>
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Birthday *</label>
+                    <input type="date" id="student-birthday" required>
+                </div>
+                <div class="form-group">
+                    <label>Active Email Address *</label>
+                    <input type="email" id="student-email" required>
+                </div>
+                <div class="form-group">
+                    <label>Active Phone Number *</label>
+                    <input type="tel" id="student-phone" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label>Payment Reference / Transaction Number *</label>
+                <input type="text" id="payment-ref" required placeholder="Enter reference ID">
+            </div>
+
+            <div class="grid-3">
+                <div class="form-group">
+                    <label>Upload Profile Picture *</label>
+                    <input type="file" id="upload-profile" accept="image/*" onchange="encodeImageFile(this, 'profile-stream')">
+                    <input type="hidden" id="profile-stream">
+                </div>
+                <div class="form-group">
+                    <label>Upload Screenshot of Successful Payment *</label>
+                    <input type="file" id="upload-receipt" accept="image/*" onchange="encodeImageFile(this, 'receipt-stream')">
+                    <input type="hidden" id="receipt-stream">
+                </div>
+            </div>
+
+            <button class="btn-action" onclick="submitEnrollment()">ENROLL</button>
+        </section>
+
+
+        <!-- STEP 4: SUCCESS PROFILE DISPLAY -->
+        <section id="step-success" class="step-panel">
+            <div class="success-box">
+                <div class="success-title">CONGRATULATIONS YOU ARE SUCCESSFULLY ENROLLED</div>
+                <p>Please take a screenshot of your enrollment information, go to "My Class" to see your class schedule.</p>
+            </div>
+
+            <h2 class="section-title">Student Enrollment Details</h2>
+            <div class="summary-card">
+                <div class="summary-row"><strong>Full Name:</strong> <span id="lbl-full-name"></span></div>
+                <div class="summary-row"><strong>Class Code:</strong> <span id="lbl-class-code" style="font-weight: 700; color: var(--navy-blue);"></span></div>
+                <div class="summary-row"><strong>Class Type:</strong> <span id="lbl-class-type"></span></div>
+                <div class="summary-row"><strong>Level:</strong> <span id="lbl-level"></span></div>
+                <div class="summary-row"><strong>Chosen Date:</strong> <span id="lbl-date"></span></div>
+                <div class="summary-row"><strong>Day:</strong> <span id="lbl-day"></span></div>
+                <div class="summary-row"><strong>Time in the Philippines:</strong> <span id="lbl-time-ph"></span></div>
+                <div class="summary-row"><strong>Time in Japan:</strong> <span id="lbl-time-jp"></span></div>
+            </div>
+        </section>
+
+    </main>
 
     <script>
-        // REPLACE THIS EXPLICITLY WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
-        const API_URL = "https://script.google.com/macros/s/AKfycbxWF9IEQRhoAIll0hP1MDXrMgzIwF02KXzzvDWuJ5g5MsQjFdWlzJIR53o2pxGwCu81/exec";
-        let localCatalogCache = [];
+        // Immutably hardcoded Course Mapping Database to eliminate all API lookup timeouts
+        const courseDatabase = {
+            "JLPT Preparation": {
+                levels: ["JLPT N5", "JLPT N4", "JLPT N3", "JLPT N2", "JLPT N1"],
+                desc: "Review guide tailored to master JLPT criteria across language proficiencies.",
+                prices: { "JAPAN": "¥2,959", "PHILIPPINES": "₱2,500" }
+            },
+            "JFT Preparation": {
+                levels: ["JFT A1", "JFT A2"],
+                desc: "Study roadmap tailored specifically for the JFT-Basic Framework.",
+                prices: { "JAPAN": "¥3,200", "PHILIPPINES": "₱2,800" }
+            },
+            "SSW 1 Prometric Preparation": {
+                levels: ["Kaigo: SKILL", "Kaigo: JAPANESE", "FOOD PROCESSING", "HOTEL", "FOOD SERVICE", "BUILDING MAINTENANCE"],
+                desc: "Review and preparation for specified skilled worker industry evaluation exams.",
+                prices: { "JAPAN": "¥4,500", "PHILIPPINES": "₱3,800" }
+            },
+            "SSW 2 Prometric Preparation": {
+                levels: ["CONSTRUCTION", "MANUFACTURING", "HOTEL", "FOOD SERVICE", "BUILDING MAINTENANCE"],
+                desc: "Advanced training tracking towards management criteria evaluation fields.",
+                prices: { "JAPAN": "¥5,500", "PHILIPPINES": "₱4,800" }
+            }
+        };
 
-        window.addEventListener('DOMContentLoaded', () => {
-            fetchSystemSettings();
-            fetchCatalogData();
-        });
+        // Automatic clock ticking system
+        setInterval(() => {
+            const now = new Date();
+            const phTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Manila"}));
+            const jpTime = new Date(now.toLocaleString("en-US", {timeZone: "Asia/Tokyo"}));
+            
+            document.getElementById('ph-clock').innerText = phTime.toLocaleDateString() + ' ' + phTime.toLocaleTimeString();
+            document.getElementById('jp-clock').innerText = jpTime.toLocaleDateString() + ' ' + jpTime.toLocaleTimeString();
+        }, 1000);
 
-        function showMessage(text, isError = false) {
-            const el = document.getElementById('statusAlert');
-            el.className = `alert ${isError ? 'alert-danger' : 'alert-success'}`;
-            el.innerText = text;
-            el.style.display = 'block';
-            window.scrollTo({ top: 0, behavior: 'smooth' });
+        function updateCatalogOptions() {
+            const loc = document.getElementById('student-location').value;
+            const typeSelect = document.getElementById('class-type');
+            const lvlSelect = document.getElementById('course-level');
+            const summaryBox = document.getElementById('catalog-summary-box');
+
+            summaryBox.style.display = "none";
+
+            if (!loc) {
+                typeSelect.disabled = true;
+                lvlSelect.disabled = true;
+                return;
+            }
+            typeSelect.disabled = false;
+
+            const selectedType = typeSelect.value;
+            if (!selectedType) {
+                lvlSelect.disabled = true;
+                return;
+            }
+
+            lvlSelect.innerHTML = '<option value="">-- Choose Level --</option>';
+            courseDatabase[selectedType].levels.forEach(lvl => {
+                lvlSelect.innerHTML += `<option value="${lvl}">${lvl}</option>`;
+            });
+            lvlSelect.disabled = false;
         }
 
-        async function fetchSystemSettings() {
-            try {
-                let res = await fetch(`${API_URL}?action=getSettings`);
-                let json = await res.json();
-                if (json.status === "SUCCESS") {
-                    let nameSetting = json.data.find(s => s.Key === 'COMPANY_NAME');
-                    if (nameSetting) document.getElementById('metaTitle').innerText = nameSetting.Value;
-                }
-            } catch (e) { console.error("Settings extraction failed dynamically.", e); }
+        function calculatePricing() {
+            const loc = document.getElementById('student-location').value;
+            const type = document.getElementById('class-type').value;
+            const lvl = document.getElementById('course-level').value;
+            const summaryBox = document.getElementById('catalog-summary-box');
+
+            if (!loc || !type || !lvl) {
+                summaryBox.style.display = "none";
+                return;
+            }
+
+            document.getElementById('summary-course-display').innerText = `${type} - ${lvl}`;
+            document.getElementById('summary-desc-display').innerText = courseDatabase[type].desc;
+            document.getElementById('summary-price-display').innerText = courseDatabase[type].prices[loc];
+            summaryBox.style.display = "block";
         }
 
-        async function fetchCatalogData() {
-            try {
-                let res = await fetch(`${API_URL}?action=getCatalog`);
-                let json = await res.json();
-                if (json.status === "SUCCESS") {
-                    localCatalogCache = json.data;
-                    document.getElementById('catalogLoading').style.display = 'none';
-                    renderCatalog(json.data);
-                    populateFormDropdown(json.data);
-                } else { throw new Error("Catalog structural array mismatch"); }
-            } catch (e) {
-                document.getElementById('catalogLoading').innerText = "Database mapping extraction timeout error.";
-                console.error(e);
+        function goToSchedule() {
+            document.getElementById('step-catalog').classList.remove('active');
+            document.getElementById('step-schedule').classList.add('active');
+        }
+
+        function updateDayOfWeek() {
+            const dateVal = document.getElementById('schedule-date').value;
+            if (!dateVal) return;
+            const days = ['SUNDAY', 'MONDAY', 'TUESDAY', 'WEDNESDAY', 'THURSDAY', 'FRIDAY', 'SATURDAY'];
+            const d = new Date(dateVal);
+            document.getElementById('schedule-day').value = days[d.getDay()];
+        }
+
+        function syncJapanTime() {
+            const timeVal = document.getElementById('schedule-time').value;
+            const display = document.getElementById('japan-time-display');
+            if (timeVal.includes("10:00 AM")) {
+                display.value = "11:00 AM - 12:30 PM (JST)";
+            } else if (timeVal.includes("01:00 PM")) {
+                display.value = "02:00 PM - 03:30 PM (JST)";
+            } else if (timeVal.includes("04:00 PM")) {
+                display.value = "05:00 PM - 06:30 PM (JST)";
+            } else {
+                display.value = "";
             }
         }
 
-        function renderCatalog(items) {
-            const grid = document.getElementById('catalogGrid');
-            grid.innerHTML = "";
-            let row = document.createElement('div');
-            row.className = 'catalog-row';
-            
-            const themes = ['pink-theme', 'blue-theme', 'yellow-theme'];
-            
-            items.forEach((item, index) => {
-                if (index > 0 && index % 3 === 0) {
-                    grid.appendChild(row);
-                    row = document.createElement('div');
-                    row.className = 'catalog-row';
-                }
-                
-                let cell = document.createElement('div');
-                cell.className = `catalog-item ${themes[index % 3]}`;
-                cell.innerHTML = `
-                    <h3>${item.Class_Type || 'Review Track'}</h3>
-                    <p style="font-weight:bold; color:var(--primary-accent);">${item.Level}</p>
-                    <p style="font-size:0.85rem; margin:8px 0;">${item.Description || ''}</p>
-                    <div class="price-badge">PHP ${item.Price_PHP || 'TBD'} / JPY ${item.Price_JPY || 'TBD'}</div>
-                `;
-                row.appendChild(cell);
-            });
-            grid.appendChild(row);
+        function goToPayment() {
+            if (!document.getElementById('schedule-date').value || !document.getElementById('schedule-time').value) {
+                alert('Please pick your date and schedule timeslots first.');
+                return;
+            }
+            document.getElementById('step-schedule').classList.remove('active');
+            document.getElementById('step-payment').classList.add('active');
         }
 
-        function populateFormDropdown(items) {
-            const select = document.getElementById('classSelect');
-            items.forEach(item => {
-                let opt = document.createElement('option');
-                opt.value = `${item.Class_Type}|${item.Level}`;
-                opt.innerText = `${item.Class_Type} - ${item.Level}`;
-                select.appendChild(opt);
-            });
-        }
-
-        function updatePriceDetails() {
-            const val = document.getElementById('classSelect').value;
-            const box = document.getElementById('priceDetailBox');
-            const targetSpan = document.getElementById('displayedPrice');
-            const loc = document.getElementById('studentLocation').value;
-            
-            if(!val) { box.style.display = 'none'; return; }
-            
-            const [type, lvl] = val.split('|');
-            const match = localCatalogCache.find(c => c.Class_Type === type && c.Level === lvl);
-            
-            if(match) {
-                let pStr = loc === "JAPAN" ? `¥${match.Price_JPY}` : `₱${match.Price_PHP}`;
-                targetSpan.innerText = pStr;
-                box.style.display = 'block';
+        function encodeImageFile(element, hiddenId) {
+            const file = element.files[0];
+            const reader = new FileReader();
+            reader.onloadend = function() {
+                document.getElementById(hiddenId).value = reader.result.split(',')[1];
+            }
+            if (file) {
+                reader.readAsDataURL(file);
             }
         }
 
-        function handleFormSubmission(e) {
-            e.preventDefault();
-            const btn = document.getElementById('submitBtn');
-            btn.disabled = true;
-            btn.innerText = "Processing cryptographical checksum upload...";
-
-            const fileInput = document.getElementById('proofOfPayment').files[0];
-            if(fileInput) {
-                const reader = new FileReader();
-                reader.onload = function(event) {
-                    executePostRequest(event.target.result);
-                };
-                reader.readAsDataURL(fileInput);
-            } else { executePostRequest(null); }
-        }
-
-        async function executePostRequest(base64File) {
-            const val = document.getElementById('classSelect').value;
-            const [classType, level] = val.split('|');
+        function submitEnrollment() {
+            const ln = document.getElementById('student-lastname').value.trim().toUpperCase();
+            const fn = document.getElementById('student-firstname').value.trim().toUpperCase();
+            const mn = document.getElementById('student-middlename').value.trim().toUpperCase();
             
+            if (!ln || !fn || !document.getElementById('student-email').value || !document.getElementById('payment-ref').value) {
+                alert('Please complete all mandatory configuration fields.');
+                return;
+            }
+
+            const fullName = mn ? `${ln}, ${fn} ${mn}` : `${ln}, ${fn}`;
+            const type = document.getElementById('class-type').value;
+            const lvl = document.getElementById('course-level').value;
+            
+            // Generate standard short tracking token code
+            const cleanType = type.replace(/[^A-Z0-9]/ig, '').substring(0, 7).toUpperCase();
+            const cleanLvl = lvl.replace(/[^A-Z0-9]/ig, '').toUpperCase();
+            const classCode = `${cleanType}${cleanLvl}`;
+
+            // Map and update directly into view elements
+            document.getElementById('lbl-full-name').innerText = fullName;
+            document.getElementById('lbl-class-code').innerText = classCode;
+            document.getElementById('lbl-class-type').innerText = type;
+            document.getElementById('lbl-level').innerText = lvl;
+            document.getElementById('lbl-date').innerText = document.getElementById('schedule-date').value;
+            document.getElementById('lbl-day').innerText = document.getElementById('schedule-day').value;
+            document.getElementById('lbl-time-ph').innerText = document.getElementById('schedule-time').value;
+            document.getElementById('lbl-time-jp').innerText = document.getElementById('japan-time-display').value;
+
+            // Transition directly into complete rendering block view
+            document.getElementById('step-payment').classList.remove('active');
+            document.getElementById('step-success').classList.add('active');
+
+            // Send actual execution stream dataset directly to deployment Apps Script WebApp
             const payload = {
-                action: "submitBooking",
-                data: {
-                    lastName: document.getElementById('lastName').value,
-                    firstName: document.getElementById('firstName').value,
-                    middleName: document.getElementById('middleName').value,
-                    birthday: document.getElementById('birthday').value,
-                    studentLocation: document.getElementById('studentLocation').value,
-                    emailAddress: document.getElementById('emailAddress').value,
-                    phoneNumber: document.getElementById('phoneNumber').value,
-                    classType: classType,
-                    level: level,
-                    proofOfPaymentBase64: base64File
-                }
+                timestamp: new Date().toISOString(),
+                profilePic: document.getElementById('profile-stream').value,
+                fullName: fullName,
+                lastName: ln,
+                firstName: fn,
+                middleName: mn,
+                birthday: document.getElementById('student-birthday').value,
+                location: document.getElementById('student-location').value,
+                classType: type,
+                level: lvl,
+                price: document.getElementById('summary-price-display').innerText,
+                date: document.getElementById('schedule-date').value,
+                day: document.getElementById('schedule-day').value,
+                timePh: document.getElementById('schedule-time').value,
+                timeJp: document.getElementById('japan-time-display').value,
+                email: document.getElementById('student-email').value,
+                phone: document.getElementById('student-phone').value,
+                paymentRef: document.getElementById('payment-ref').value,
+                receiptPic: document.getElementById('receipt-stream').value
             };
 
-            try {
-                let res = await fetch(API_URL, {
-                    method: "POST",
-                    body: JSON.stringify(payload)
-                });
-                let json = await res.json();
-                if(json.status === "SUCCESS") {
-                    showMessage("Booking committed successfully! Your reference will process following payment confirmation.");
-                    document.getElementById('bookingForm').reset();
-                } else { throw new Error(json.message); }
-            } catch(err) {
-                showMessage(`System transmission error: ${err.toString()}`, true);
-            } finally {
-                const btn = document.getElementById('submitBtn');
-                btn.disabled = false;
-                btn.innerText = "Commit Verified Reservation";
-            }
+            // Replace with your real Apps Script Executable URL deployment deployment link path string
+            fetch('https://script.google.com/macros/s/AKfycbxWF9IEQRhoAIll0hP1MDXrMgzIwF02KXzzvDWuJ5g5MsQjFdWlzJIR53o2pxGwCu81/exec', {
+                method: 'POST',
+                mode: 'no-cors',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+            }).catch(err => console.log("Background synchronization pipeline context log:", err));
         }
     </script>
 </body>
