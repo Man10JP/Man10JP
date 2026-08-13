@@ -1,0 +1,433 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAN-TEN Language Center | Automated Booking System</title>
+    <style>
+        :root {
+            --pastel-pink: #FFF0F2;
+            --pastel-blue: #E6F0FA;
+            --pastel-green: #E8F7EE;
+            --pastel-yellow: #FFF9E6;
+            --pastel-grey: #F4F5F7;
+            --primary-accent: #4A6984;
+            --text-dark: #333F48;
+            --white: #FFFFFF;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: var(--pastel-grey);
+            color: var(--text-dark);
+            line-height: 1.6;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--pastel-blue), var(--pastel-pink));
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--white);
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+        }
+
+        header h1 {
+            color: var(--primary-accent);
+            font-size: 2.2rem;
+            margin-bottom: 10px;
+        }
+
+        header p {
+            font-size: 1.1rem;
+            color: #607282;
+        }
+
+        .container {
+            max-width: 1100px;
+            margin: 30px auto;
+            padding: 0 20px;
+        }
+
+        .grid-layout {
+            display: block;
+        }
+
+        .card {
+            background-color: var(--white);
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.02);
+            border: 1px solid rgba(0,0,0,0.03);
+        }
+
+        .card-title {
+            font-size: 1.4rem;
+            color: var(--primary-accent);
+            margin-bottom: 20px;
+            border-left: 5px solid var(--primary-accent);
+            padding-left: 10px;
+        }
+
+        /* Interactive Dynamic Catalog Layout */
+        .catalog-grid {
+            display: table;
+            width: 100%;
+            border-collapse: separate;
+            border-spacing: 15px;
+        }
+
+        .catalog-row {
+            display: table-row;
+        }
+
+        .catalog-item {
+            display: table-cell;
+            background-color: var(--pastel-green);
+            padding: 20px;
+            border-radius: 10px;
+            width: 33.33%;
+            vertical-align: top;
+            border: 2px solid var(--white);
+            transition: all 0.2s ease;
+        }
+
+        .catalog-item.yellow-theme { background-color: var(--pastel-yellow); }
+        .catalog-item.blue-theme { background-color: var(--pastel-blue); }
+        .catalog-item.pink-theme { background-color: var(--pastel-pink); }
+
+        .price-badge {
+            display: inline-block;
+            background-color: var(--white);
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin: 10px 0;
+            color: var(--primary-accent);
+        }
+
+        /* Semantic Form Elements Styling */
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid var(--pastel-grey);
+            border-radius: 8px;
+            font-size: 1rem;
+            background-color: var(--pastel-grey);
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary-accent);
+            background-color: var(--white);
+        }
+
+        button {
+            background-color: var(--primary-accent);
+            color: var(--white);
+            padding: 14px 28px;
+            border: none;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: opacity 0.2s;
+            width: 100%;
+        }
+
+        button:hover {
+            opacity: 0.9;
+        }
+
+        /* Status States Alert Windows */
+        .alert {
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            display: none;
+            font-weight: 500;
+        }
+        .alert-success { background-color: var(--pastel-green); color: #2E5A44; border: 1px solid #C2EAD3; }
+        .alert-danger { background-color: var(--pastel-pink); color: #8A2B37; border: 1px solid #F9D2D7; }
+
+        @media (max-width: 768px) {
+            .catalog-grid, .catalog-row, .catalog-item {
+                display: block;
+                width: 100%;
+            }
+            .catalog-item { margin-bottom: 15px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1 id="metaTitle">MAN-TEN Language Center</h1>
+        <p>満天の星のごとく輝け。 | Premium Japanese Language Training</p>
+    </header>
+
+    <div class="container">
+        <div id="statusAlert" class="alert"></div>
+
+        <!-- Bulletin Section -->
+        <div class="card" id="bulletinCard" style="display:none;">
+            <div class="card-title">Latest Announcements</div>
+            <div id="bulletinContainer"></div>
+        </div>
+
+        <div class="grid-layout">
+            <!-- Catalog Element -->
+            <div class="card">
+                <div class="card-title">Available Language Programs</div>
+                <div id="catalogLoading">Connecting to core database cluster...</div>
+                <div class="catalog-grid" id="catalogGrid"></div>
+            </div>
+
+            <!-- Operations Intake Form -->
+            <div class="card">
+                <div class="card-title">Secure Seat Registration Form</div>
+                <form id="bookingForm" onsubmit="handleFormSubmission(event)">
+                    <div style="display: table; width: 100%; border-collapse: collapse;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell; width: 33.33%; padding-right: 10px;" class="form-group">
+                                <label for="lastName">Last Name *</label>
+                                <input type="text" id="lastName" required placeholder="e.g. SMITH">
+                            </div>
+                            <div style="display: table-cell; width: 33.33%; padding-right: 10px;" class="form-group">
+                                <label for="firstName">First Name *</label>
+                                <input type="text" id="firstName" required placeholder="e.g. DAVID">
+                            </div>
+                            <div style="display: table-cell; width: 33.33%;" class="form-group">
+                                <label for="middleName">Middle Name</label>
+                                <input type="text" id="middleName" placeholder="Optional">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: table; width: 100%; border-collapse: collapse;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell; width: 50%; padding-right: 10px;" class="form-group">
+                                <label for="birthday">Date of Birth *</label>
+                                <input type="date" id="birthday" required>
+                            </div>
+                            <div style="display: table-cell; width: 50%;" class="form-group">
+                                <label for="studentLocation">Geographic Location context *</label>
+                                <select id="studentLocation" required>
+                                    <option value="PHILIPPINES">Philippines (PST Time Sync)</option>
+                                    <option value="JAPAN">Japan (JST Time Sync)</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div style="display: table; width: 100%; border-collapse: collapse;">
+                        <div style="display: table-row;">
+                            <div style="display: table-cell; width: 50%; padding-right: 10px;" class="form-group">
+                                <label for="emailAddress">Email Address *</label>
+                                <input type="email" id="emailAddress" required placeholder="student@example.com">
+                            </div>
+                            <div style="display: table-cell; width: 50%;" class="form-group">
+                                <label for="phoneNumber">Phone Number *</label>
+                                <input type="tel" id="phoneNumber" required placeholder="e.g. 0917XXXXXXX">
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="classSelect">Target Course Track Selection *</label>
+                        <select id="classSelect" required onchange="updatePriceDetails()">
+                            <option value="">-- Choose a course from catalog --</option>
+                        </select>
+                    </div>
+
+                    <div id="priceDetailBox" class="form-group" style="display:none; background-color: var(--pastel-blue); padding:15px; border-radius:8px; margin-bottom:20px;">
+                        <strong>Calculated Base Matrix Rate:</strong> <span id="displayedPrice"></span>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="proofOfPayment">Attach Proof of Payment (PNG/JPG Base64 Stream) *</label>
+                        <input type="file" id="proofOfPayment" accept="image/*" required>
+                    </div>
+
+                    <button type="submit" id="submitBtn">Commit Verified Reservation</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // REPLACE THIS EXPLICITLY WITH YOUR DEPLOYED GOOGLE APPS SCRIPT WEB APP URL
+        const API_URL = "https://script.google.com/macros/s/AKfycbxWF9IEQRhoAIll0hP1MDXrMgzIwF02KXzzvDWuJ5g5MsQjFdWlzJIR53o2pxGwCu81/exec";
+        let localCatalogCache = [];
+
+        window.addEventListener('DOMContentLoaded', () => {
+            fetchSystemSettings();
+            fetchCatalogData();
+        });
+
+        function showMessage(text, isError = false) {
+            const el = document.getElementById('statusAlert');
+            el.className = `alert ${isError ? 'alert-danger' : 'alert-success'}`;
+            el.innerText = text;
+            el.style.display = 'block';
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        async function fetchSystemSettings() {
+            try {
+                let res = await fetch(`${API_URL}?action=getSettings`);
+                let json = await res.json();
+                if (json.status === "SUCCESS") {
+                    let nameSetting = json.data.find(s => s.Key === 'COMPANY_NAME');
+                    if (nameSetting) document.getElementById('metaTitle').innerText = nameSetting.Value;
+                }
+            } catch (e) { console.error("Settings extraction failed dynamically.", e); }
+        }
+
+        async function fetchCatalogData() {
+            try {
+                let res = await fetch(`${API_URL}?action=getCatalog`);
+                let json = await res.json();
+                if (json.status === "SUCCESS") {
+                    localCatalogCache = json.data;
+                    document.getElementById('catalogLoading').style.display = 'none';
+                    renderCatalog(json.data);
+                    populateFormDropdown(json.data);
+                } else { throw new Error("Catalog structural array mismatch"); }
+            } catch (e) {
+                document.getElementById('catalogLoading').innerText = "Database mapping extraction timeout error.";
+                console.error(e);
+            }
+        }
+
+        function renderCatalog(items) {
+            const grid = document.getElementById('catalogGrid');
+            grid.innerHTML = "";
+            let row = document.createElement('div');
+            row.className = 'catalog-row';
+            
+            const themes = ['pink-theme', 'blue-theme', 'yellow-theme'];
+            
+            items.forEach((item, index) => {
+                if (index > 0 && index % 3 === 0) {
+                    grid.appendChild(row);
+                    row = document.createElement('div');
+                    row.className = 'catalog-row';
+                }
+                
+                let cell = document.createElement('div');
+                cell.className = `catalog-item ${themes[index % 3]}`;
+                cell.innerHTML = `
+                    <h3>${item.Class_Type || 'Review Track'}</h3>
+                    <p style="font-weight:bold; color:var(--primary-accent);">${item.Level}</p>
+                    <p style="font-size:0.85rem; margin:8px 0;">${item.Description || ''}</p>
+                    <div class="price-badge">PHP ${item.Price_PHP || 'TBD'} / JPY ${item.Price_JPY || 'TBD'}</div>
+                `;
+                row.appendChild(cell);
+            });
+            grid.appendChild(row);
+        }
+
+        function populateFormDropdown(items) {
+            const select = document.getElementById('classSelect');
+            items.forEach(item => {
+                let opt = document.createElement('option');
+                opt.value = `${item.Class_Type}|${item.Level}`;
+                opt.innerText = `${item.Class_Type} - ${item.Level}`;
+                select.appendChild(opt);
+            });
+        }
+
+        function updatePriceDetails() {
+            const val = document.getElementById('classSelect').value;
+            const box = document.getElementById('priceDetailBox');
+            const targetSpan = document.getElementById('displayedPrice');
+            const loc = document.getElementById('studentLocation').value;
+            
+            if(!val) { box.style.display = 'none'; return; }
+            
+            const [type, lvl] = val.split('|');
+            const match = localCatalogCache.find(c => c.Class_Type === type && c.Level === lvl);
+            
+            if(match) {
+                let pStr = loc === "JAPAN" ? `¥${match.Price_JPY}` : `₱${match.Price_PHP}`;
+                targetSpan.innerText = pStr;
+                box.style.display = 'block';
+            }
+        }
+
+        function handleFormSubmission(e) {
+            e.preventDefault();
+            const btn = document.getElementById('submitBtn');
+            btn.disabled = true;
+            btn.innerText = "Processing cryptographical checksum upload...";
+
+            const fileInput = document.getElementById('proofOfPayment').files[0];
+            if(fileInput) {
+                const reader = new FileReader();
+                reader.onload = function(event) {
+                    executePostRequest(event.target.result);
+                };
+                reader.readAsDataURL(fileInput);
+            } else { executePostRequest(null); }
+        }
+
+        async function executePostRequest(base64File) {
+            const val = document.getElementById('classSelect').value;
+            const [classType, level] = val.split('|');
+            
+            const payload = {
+                action: "submitBooking",
+                data: {
+                    lastName: document.getElementById('lastName').value,
+                    firstName: document.getElementById('firstName').value,
+                    middleName: document.getElementById('middleName').value,
+                    birthday: document.getElementById('birthday').value,
+                    studentLocation: document.getElementById('studentLocation').value,
+                    emailAddress: document.getElementById('emailAddress').value,
+                    phoneNumber: document.getElementById('phoneNumber').value,
+                    classType: classType,
+                    level: level,
+                    proofOfPaymentBase64: base64File
+                }
+            };
+
+            try {
+                let res = await fetch(API_URL, {
+                    method: "POST",
+                    body: JSON.stringify(payload)
+                });
+                let json = await res.json();
+                if(json.status === "SUCCESS") {
+                    showMessage("Booking committed successfully! Your reference will process following payment confirmation.");
+                    document.getElementById('bookingForm').reset();
+                } else { throw new Error(json.message); }
+            } catch(err) {
+                showMessage(`System transmission error: ${err.toString()}`, true);
+            } finally {
+                const btn = document.getElementById('submitBtn');
+                btn.disabled = false;
+                btn.innerText = "Commit Verified Reservation";
+            }
+        }
+    </script>
+</body>
+</html>
