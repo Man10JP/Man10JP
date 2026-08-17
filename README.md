@@ -1,4 +1,4 @@
-## Hi there 👋
+## Hi! Happy Nihongo Learning with Man-Ten 100% PASS!👋
 
 <!--
 **Man10JP/Man10JP** is a ✨ _special_ ✨ repository because its `README.md` (this file) appears on your GitHub profile.
