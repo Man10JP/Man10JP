@@ -1,13 +1,5 @@
 /* ============================================================================
    MAN-TEN BOOKING SYSTEM — WEBSITE CONFIGURATION
-
-   This is the ONLY file you edit after a redeployment.
-   Upload it to your GitHub repository next to index.html.
-
-   Because your settings live here and not in index.html, you can replace
-   index.html with a new version any time without losing them — and a new
-   index.html can never arrive carrying a placeholder URL that breaks the
-   live site. 
    ============================================================================ */
 
 
@@ -17,14 +9,6 @@
    Where to find it:
      Apps Script editor > Deploy > Manage deployments > copy the Web app URL.
 
-   It must:
-     - start with  https://script.google.com/macros/s/
-     - end with    /exec        (NOT /dev — /dev only works while signed in as you)
-
-   The URL below was taken from your working 18 Aug deployment. If you have
-   since created a NEW deployment rather than a new VERSION of the existing
-   one, the URL will have changed — copy the current one from Manage
-   deployments and replace it here.
    --------------------------------------------------------------------------- */
 
 window.MANTEN_API =
