@@ -7,7 +7,7 @@
    Because your settings live here and not in index.html, you can replace
    index.html with a new version any time without losing them — and a new
    index.html can never arrive carrying a placeholder URL that breaks the
-   live site. That is exactly what happened on 19 Aug 2026.
+   live site. 
    ============================================================================ */
 
 
