@@ -7,13 +7,19 @@
 <meta name="description" content="Book JLPT, JFT and SSW Prometric preparation classes with native Japanese and certified teachers. For students in Japan and the Philippines.">
 
 <!-- ============================================================================
-     CONFIGURATION — the only line you must change after deploying Apps Script.
-     Paste your /exec URL between the quotes.
+     CONFIGURATION lives in config.js — a separate file, on purpose.
+
+     Your Apps Script URL is NOT in this file. That means you can replace
+     index.html as often as you like without ever losing your settings, and a
+     new index.html can never arrive with a placeholder URL that breaks the
+     live site. Edit config.js, not this file.
      ============================================================================ -->
 <script>
-  window.MANTEN_API = https://script.google.com/macros/s/AKfycbxM5c3Hd_VjBv4JRYkpilxF3RJ2vAmKzhjzMYnXIhkgPH8mtfh3l70c6f5IKnaRHhiT/exec";
-  window.MANTEN_RECAPTCHA_SITE_KEY = ""; // optional; leave blank to skip
+  // Defaults. config.js loads next and overrides them.
+  window.MANTEN_API = "";
+  window.MANTEN_RECAPTCHA_SITE_KEY = "";
 </script>
+<script src="config.js"></script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -258,7 +264,7 @@ footer a{color:#CFDCEA}
     <div class="brand">
       <div class="mark" id="brandMark">M10</div>
       <div>
-        <h1 id="companyName">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER</h1>
+        <h1 id="companyName">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER </h1>
         <p id="tagline">満天の星のごとく輝け。</p>
       </div>
     </div>
@@ -688,9 +694,31 @@ function phToJp(range){
    ========================================================================== */
 const API = () => (window.MANTEN_API||"").trim();
 
+/** True when config.js is missing, empty, or still holds a placeholder. */
+function apiMissing(){
+  const u = API();
+  return !u || u.indexOf("PASTE_")===0 || !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u);
+}
+
+/** One unmissable banner at the top of the page, rather than an error per section. */
+function showSetupBanner(){
+  if($("setupBanner")) return;
+  const d = document.createElement("div");
+  d.id = "setupBanner";
+  d.setAttribute("role","alert");
+  d.style.cssText = "background:#FCE7EB;border-bottom:2px solid #E4A9B7;color:#8E2440;"+
+    "padding:14px 20px;font-size:14px;line-height:1.6";
+  d.innerHTML = '<div class="wrap"><b>This site is not connected to the booking server.</b><br>'+
+    'The file <code>config.js</code> is missing from the website, or it does not contain a valid '+
+    'Apps Script <code>/exec</code> URL. Courses, schedules and bookings cannot load until it does. '+
+    'Nothing else is broken.</div>';
+  const nav = document.querySelector("nav.main");
+  nav.parentNode.insertBefore(d, nav.nextSibling);
+}
+
 function apiGet(params){
   return new Promise((resolve,reject)=>{
-    if(!API() || API().indexOf("PASTE_")===0) return reject(new Error("The website is not connected to the booking server yet."));
+    if(apiMissing()) return reject(new Error("The website is not connected to the booking server. Check that config.js exists in the GitHub repository and holds your Apps Script /exec URL."));
     const cb = "mtcb_"+Math.random().toString(36).slice(2);
     const q = new URLSearchParams(Object.assign({callback:cb,_:Date.now()},params)).toString();
     const s = document.createElement("script");
@@ -704,7 +732,7 @@ function apiGet(params){
 }
 
 async function apiPost(payload, onRetry){
-  if(!API() || API().indexOf("PASTE_")===0) throw new Error("The website is not connected to the booking server yet.");
+  if(apiMissing()) throw new Error("The website is not connected to the booking server. Check that config.js exists in the GitHub repository and holds your Apps Script /exec URL.");
 
   // Retry a few times with growing gaps. The same submissionId travels with every
   // attempt, and the server refuses to process one twice — so a retry can never
@@ -769,6 +797,7 @@ addEventListener("hashchange",route);
    ========================================================================== */
 async function boot(){
   route();
+  if(apiMissing()) showSetupBanner();
   try{
     const d = await apiGet({action:"bootstrap"});
     STATE.boot = d;
