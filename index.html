@@ -3,13 +3,13 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<title>MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER </title>
+<title>MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER</title>
 <meta name="description" content="Book JLPT, JFT and SSW Prometric preparation classes with native Japanese and certified teachers. For students in Japan and the Philippines.">
 
 <!-- ============================================================================
      CONFIGURATION lives in config.js — a separate file, on purpose.
 
-     Your Apps Script URL is NOT in this file. That means you can replace
+     Apps Script URL is NOT in this file. That means can replace
      index.html as often as you like without ever losing your settings, and a
      new index.html can never arrive with a placeholder URL that breaks the
      live site. Edit config.js, not this file.
@@ -107,7 +107,12 @@ nav.main{background:var(--white);border-bottom:1px solid var(--grey-line);positi
 
 /* ---------- hero: the starfield ---------- */
 .hero{position:relative;background:var(--night);color:#F2F5FA;overflow:hidden;isolation:isolate}
-#stars{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.85}
+#stars{position:absolute;inset:0;width:100%;height:100%;z-index:0;opacity:.85;transition:opacity .5s ease}
+.hero.has-photo #stars{opacity:.32}
+/* Over a photo the body copy needs to be brighter to stay at AA contrast. */
+.hero.has-photo p.lede{color:#F2F5FA}
+.hero.has-photo h2,.hero.has-photo p.lede{text-shadow:0 1px 12px rgba(10,14,22,.55)}
+.hero.has-photo .point{background:rgba(10,14,22,.42);border-color:rgba(255,255,255,.16)}
 .hero::after{content:"";position:absolute;inset:auto 0 0 0;height:120px;z-index:1;
   background:linear-gradient(to top,rgba(255,227,236,.16),transparent)}
 .hero-inner{position:relative;z-index:2;padding:clamp(48px,8vw,92px) 0 clamp(40px,6vw,72px)}
@@ -264,7 +269,7 @@ footer a{color:#CFDCEA}
     <div class="brand">
       <div class="mark" id="brandMark">M10</div>
       <div>
-        <h1 id="companyName">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER </h1>
+        <h1 id="companyName">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER</h1>
         <p id="tagline">満天の星のごとく輝け。</p>
       </div>
     </div>
@@ -574,9 +579,10 @@ footer a{color:#CFDCEA}
 <footer>
   <div class="wrap foot-row">
     <div>
-      <strong id="footName">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER </strong><br>
+      <strong id="footName">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER</strong><br>
       <span id="footHours">—</span><br>
-      <a id="footMail" href="#">—</a>
+      <a id="footMail" href="#">—</a><br>
+      <a id="footFb" href="#" target="_blank" rel="noopener noreferrer" hidden>Follow us on Facebook</a>
     </div>
     <div style="text-align:right">
       <a href="#catalog">Book a class</a> · <a href="#myclass">My Class</a><br>
@@ -754,8 +760,11 @@ async function apiPost(payload, onRetry){
       catch(e){ throw new Error("BUSY"); }      // Apps Script returns HTML when overloaded
       if(data.ok) return data;
 
-      // A genuine rejection (class full, bad email) must not be retried.
-      if(!/busy|try again/i.test(data.error||"")) throw new Error(data.error||"The booking could not be saved.");
+      // Retry ONLY when the server explicitly says it is safe to. Never guess from the
+      // wording — a real rejection whose message happened to contain "try again" used to
+      // be retried four times and then reported as "the system is busy", which hid the
+      // actual reason from the student and from the admin.
+      if(data.retryable !== true) throw new Error(data.error||"The booking could not be saved.");
       lastErr = new Error(data.error);
     }catch(e){
       if(e.message!=="BUSY" && !/busy|network|fetch|failed/i.test(e.message)) throw e;
@@ -851,13 +860,17 @@ function applySettings(s){
     const probe = new Image();
     probe.onload = ()=>{
       const h = document.querySelector(".hero");
+      // The overlay must stay dark enough to keep white text readable, but the previous
+      // 82-92% was so heavy the photo was effectively invisible. 48-72% keeps contrast
+      // well above the accessibility threshold while the picture actually shows.
       h.style.backgroundImage =
-        "linear-gradient(rgba(20,28,43,.82),rgba(20,28,43,.92)), url('"+heroUrl.replace(/'/g,"%27")+"')";
+        "linear-gradient(rgba(20,28,43,.62),rgba(20,28,43,.80)), url('"+heroUrl.replace(/'/g,"%27")+"')";
       h.style.backgroundSize = "cover";
       h.style.backgroundPosition = "center";
+      h.classList.add("has-photo");   // dims the starfield so it does not veil the photo
     };
     probe.onerror = ()=> console.warn("Header image could not load:", heroUrl,
-      "- share the file as 'Anyone with the link'.");
+      "- open it directly in the browser. If it 404s, check the filename and capitalisation.");
     probe.src = heroUrl;
   }
 
@@ -865,6 +878,15 @@ function applySettings(s){
   $("footHours").textContent = s["COMPANY BUSINESS HOURS"]||"";
   const mail = s["COMPANY EMAIL ADDRESS"]||"";
   $("footMail").textContent = mail; $("footMail").href = mail?("mailto:"+mail):"#";
+
+  // Facebook link — read from AdminSetting, hidden entirely when the cell is blank.
+  const fb = String(s["COMPANY FACEBOOK LINK"]||"").trim();
+  const fbEl = $("footFb");
+  if(fb && /^https?:\/\//i.test(fb)){
+    fbEl.href = fb; fbEl.hidden = false;
+  } else {
+    fbEl.hidden = true;
+  }
   if(s["GOOGLE CHAT EMAIL"]) $("chatEmail").textContent = s["GOOGLE CHAT EMAIL"];
   if(String(s["ENROLMENT OPEN"]||"TRUE").toUpperCase()==="FALSE"){
     $("courseList").innerHTML = '<div class="notice warn"><strong>Enrolment is closed right now</strong>'+
