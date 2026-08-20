@@ -1108,6 +1108,9 @@ function renderSchedule(list){
     const times = s.timeOptions.length
       ? s.timeOptions.map(t=>escapeHtml(t)+" <span style='color:var(--ink-faint)'>/ "+escapeHtml(phToJp(t))+"</span>").join("<br>")
       : "—";
+    // Seats now refer to the batch currently taking students, so name it. Without this
+    // a fresh batch looks like the seat count mysteriously reset.
+    const batchTag = s.currentBatch ? ' <span class="chip">'+escapeHtml(s.currentBatch)+'</span>' : '';
     const status = s.full ? '<span class="chip full">Full</span>'
       : (s.remaining<=5 ? '<span class="chip warn">Almost full</span>' : '<span class="chip ok">Open</span>');
     return '<tr'+(s.full?' class="full"':'')+'>'+
@@ -1116,7 +1119,7 @@ function renderSchedule(list){
       '<td>'+(s.actualStart? "<b>"+escapeHtml(s.actualStart)+"</b> (confirmed)" : (s.dateOptions.map(escapeHtml).join("<br>")||"—"))+'</td>'+
       '<td>'+times+'</td>'+
       '<td>'+(s.full?"0":s.remaining)+' / '+s.max+'</td>'+
-      '<td>'+status+'</td></tr>';
+      '<td>'+status+batchTag+'</td></tr>';
   }).join("");
 }
 
