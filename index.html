@@ -9,7 +9,7 @@
 <!-- ============================================================================
      CONFIGURATION lives in config.js — a separate file, on purpose.
 
-     Apps Script URL is NOT in this file. That means can replace
+     Your Apps Script URL is NOT in this file. That means you can replace
      index.html as often as you like without ever losing your settings, and a
      new index.html can never arrive with a placeholder URL that breaks the
      live site. Edit config.js, not this file.
@@ -830,13 +830,27 @@ async function boot(){
  * pasting one straight in shows a broken-image icon. Direct URLs pass through untouched.
  * The Drive file must still be shared as "Anyone with the link".
  */
+/**
+ * Only http(s) and mailto may ever reach an href or src. Without this, a "javascript:"
+ * URL typed into the Bulletin MEDIAURL column would execute in every visitor's browser
+ * when they clicked the attachment link — a stored cross-site-scripting hole that
+ * escaping alone does not close, because the danger is the SCHEME, not the characters.
+ */
+function safeUrl(u){
+  u = String(u||"").trim();
+  if(!u) return "";
+  if(/^(https?:|mailto:)/i.test(u)) return u;
+  if(/^[A-Za-z][A-Za-z0-9+.-]*:/.test(u)) return "";   // any other scheme is rejected
+  return u;                                            // relative path, e.g. logo.png
+}
+
 function directImageUrl(u){
   u = String(u||"").trim();
   if(!u) return "";
   if(!/^https?:\/\//i.test(u)) return u;            // a relative path such as logo.png
   const m = u.match(/\/file\/d\/([A-Za-z0-9_-]{10,})/)
          || u.match(/[?&]id=([A-Za-z0-9_-]{10,})/);
-  return m ? "https://lh3.googleusercontent.com/d/"+m[1] : u;
+  return m ? "https://lh3.googleusercontent.com/d/"+m[1] : safeUrl(u);
 }
 
 function applySettings(s){
@@ -975,19 +989,47 @@ function renderBulletin(list){
   if(!list.length){ $("bulletinList").innerHTML='<div class="notice info">No announcements yet.</div>'; return; }
   $("bulletinList").innerHTML = list.map(b=>{
     let media = "";
-    const u = b.url||"", t=(b.type||"").toLowerCase();
+    const raw = b.url||"", t=(b.type||"").toLowerCase();
+    // A Drive share link points at a web PAGE, not the picture, so it must be converted
+    // the same way the logo and header image are. Without this, a pasted Drive link
+    // renders as a broken image.
+    const u = directImageUrl(raw);
+    const safeRaw = safeUrl(raw);
     if(u && /^https?:\/\//i.test(u)){
-      if(t==="video") media = '<video controls preload="metadata" src="'+escapeHtml(u)+'"></video>';
+      if(t==="video"){
+        // Drive-hosted video cannot be played by a <video> tag; it needs Drive's player.
+        const dm = raw.match(/\/file\/d\/([A-Za-z0-9_-]{10,})/) || raw.match(/[?&]id=([A-Za-z0-9_-]{10,})/);
+        media = dm
+          ? '<iframe src="https://drive.google.com/file/d/'+encodeURIComponent(dm[1])+'/preview" '+
+            'allow="autoplay" loading="lazy" style="width:100%;aspect-ratio:16/9;border:0;display:block"></iframe>'
+          : '<video controls preload="metadata" src="'+escapeHtml(raw)+'"></video>';
+      }
       else if(t==="pdf") media = "";
-      else media = '<img loading="lazy" src="'+escapeHtml(u)+'" alt="">';
+      else media = u ? '<img loading="lazy" src="'+escapeHtml(u)+'" alt="" data-fallback="'+escapeHtml(safeRaw)+'">' : "";
     }
-    const link = (t==="pdf"||t==="link") && u
-      ? '<p style="margin-top:10px"><a href="'+escapeHtml(u)+'" target="_blank" rel="noopener noreferrer">Open attachment</a></p>' : "";
+    const link = (t==="pdf"||t==="link") && safeRaw
+      ? '<p style="margin-top:10px"><a href="'+escapeHtml(safeRaw)+'" target="_blank" rel="noopener noreferrer">Open attachment</a></p>' : "";
     return '<article class="bull">'+media+'<div class="body">'+
       '<time>'+escapeHtml(b.date||"")+'</time>'+
       '<h3>'+escapeHtml(b.title||"Announcement")+'</h3>'+
       '<div class="txt">'+sanitize(b.text||"")+'</div>'+link+'</div></article>';
   }).join("");
+
+  // If a picture still will not load - almost always because the Drive file is not shared
+  // as "Anyone with the link" - show a working link instead of a broken-image icon.
+  $("bulletinList").querySelectorAll("img[data-fallback]").forEach(img=>{
+    img.addEventListener("error", ()=>{
+      const href = safeUrl(img.getAttribute("data-fallback"));
+      if(!href){ img.remove(); return; }
+      const p = document.createElement("p");
+      p.className = "notice warn";
+      p.style.cssText = "margin:0;border-radius:0";
+      p.innerHTML = '<strong>Image could not be shown</strong>'+
+        '<a href="'+escapeHtml(href)+'" target="_blank" rel="noopener noreferrer">Open it here</a>'+
+        ' — to display it on the page, set the Drive file to "Anyone with the link".';
+      img.replaceWith(p);
+    }, { once:true });
+  });
 }
 
 /* ==========================================================================
