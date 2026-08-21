@@ -598,13 +598,13 @@ footer a{color:#CFDCEA}
    ========================================================================== */
 const $  = id => document.getElementById(id);
 const el = (t,c,h)=>{const n=document.createElement(t); if(c)n.className=c; if(h!==undefined)n.innerHTML=h; return n;};
-const escapeHtml = s => String(s??"").replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
+const escapeHtml = s => String(s===null||s===undefined?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const money = (cur,n)=> (cur==="JPY"?"¥":"₱") + Number(n||0).toLocaleString("en-US");
 
 /** Allowlist sanitiser for bulletin text written by an admin in the sheet. */
 function sanitize(html){
   const ok = new Set(["B","I","U","EM","STRONG","BR","P","UL","OL","LI","A","SPAN","H4"]);
-  const doc = new DOMParser().parseFromString("<div>"+String(html??"")+"</div>","text/html");
+  const doc = new DOMParser().parseFromString("<div>"+String(html===null||html===undefined?"":html)+"</div>","text/html");
   (function walk(node){
     [...node.children].forEach(c=>{
       if(!ok.has(c.tagName)){ c.replaceWith(...c.childNodes); return; }
@@ -653,6 +653,9 @@ function sanitize(html){
   }
   size(); draw();
   addEventListener("resize",()=>{ size(); if(reduce) draw(); },{passive:true});
+  // Phones fire orientationchange without a reliable resize; without this the
+  // starfield keeps the old canvas size after the screen is rotated.
+  addEventListener("orientationchange",()=>{ setTimeout(()=>{ size(); if(reduce) draw(); },250); },{passive:true});
   document.addEventListener("visibilitychange",()=>{
     if(document.hidden && raf){ cancelAnimationFrame(raf); raf=null; }
     else if(!document.hidden && !reduce && !raf) draw();
