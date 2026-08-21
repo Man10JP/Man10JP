@@ -1,0 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Man-Ten connection check</title>
+<!--
+  DIAGNOSTIC PAGE. Send this link to anyone who cannot book, then ask them to
+  screenshot the result. It tells us WHICH step fails instead of leaving us to guess.
+  It is deliberately written in old-fashioned JavaScript with no modern syntax, so it
+  runs even on a browser too old to load the booking page itself.
+-->
+<script>window.MANTEN_API=""; window.MANTEN_RECAPTCHA_SITE_KEY="";</script>
+<script src="config.js"></script>
+<style>
+  body{font-family:-apple-system,system-ui,"Segoe UI",Roboto,sans-serif;margin:0;padding:18px;
+       background:#F4F3F1;color:#1D2733;line-height:1.55;font-size:15px}
+  h1{font-size:19px;margin:0 0 4px}
+  p.sub{color:#5C6673;margin:0 0 18px;font-size:13.5px}
+  .row{background:#fff;border:1px solid #E6E4E0;border-radius:12px;padding:13px 15px;margin-bottom:10px}
+  .row b{display:block;font-size:13px;margin-bottom:3px}
+  .v{font-size:13px;color:#5C6673;word-break:break-all}
+  .ok{border-left:5px solid #2E7D52}
+  .bad{border-left:5px solid #C6416B}
+  .wait{border-left:5px solid #9A7412}
+  .tag{float:right;font-size:11px;font-weight:700;letter-spacing:.06em}
+  .ok .tag{color:#2E7D52} .bad .tag{color:#C6416B} .wait .tag{color:#9A7412}
+  #verdict{padding:15px;border-radius:12px;margin-bottom:16px;font-size:14px;background:#FFF6D6;border:1px solid #F2E3AE}
+</style>
+</head>
+<body>
+<h1>Man-Ten connection check</h1>
+<p class="sub">Please take a screenshot of this whole page and send it back.</p>
+<div id="verdict">Running checks…</div>
+<div id="out"></div>
+
+<script>
+(function () {
+  var out = document.getElementById('out');
+  function add(id, label, value, state) {
+    var d = document.getElementById(id);
+    if (!d) { d = document.createElement('div'); d.id = id; out.appendChild(d); }
+    d.className = 'row ' + (state || 'wait');
+    d.innerHTML = '<span class="tag">' + (state === 'ok' ? 'OK' : state === 'bad' ? 'FAILED' : '…') +
+      '</span><b>' + label + '</b><div class="v">' + String(value).replace(/</g, '&lt;') + '</div>';
+  }
+
+  // 1. Browser
+  add('b', '1. Browser', navigator.userAgent, 'ok');
+
+  // 2. Screen
+  add('s', '2. Screen', window.innerWidth + ' x ' + window.innerHeight +
+      '  (device pixel ratio ' + (window.devicePixelRatio || 1) + ')', 'ok');
+
+  // 3. Modern syntax support - the booking page needs this to run at all
+  var modern = false;
+  try { eval('var _t = null; _t = _t ?? 1;'); modern = true; } catch (e) { modern = false; }
+  add('m', '3. Modern JavaScript support', modern ? 'supported' : 'NOT supported - browser is too old',
+      modern ? 'ok' : 'bad');
+
+  // 4. Did config.js load?
+  var api = (window.MANTEN_API || '').trim();
+  add('c', '4. config.js loaded', api ? api : 'NO - the file did not load, or is empty',
+      api ? 'ok' : 'bad');
+
+  // 5. In-app browser detection
+  var ua = navigator.userAgent || '';
+  var inApp = /FBAN|FBAV|Instagram|Line\/|Messenger|Twitter|MicroMessenger|Viber|WhatsApp/i.test(ua);
+  add('i', '5. Opened inside an app?', inApp
+      ? 'YES - this is an in-app browser (Facebook, Messenger, LINE etc). These often block parts of a page. Please tap the "..." menu and choose "Open in Chrome" or "Open in browser", then run this check again.'
+      : 'No - this is a normal browser', inApp ? 'bad' : 'ok');
+
+  if (!api) {
+    document.getElementById('verdict').innerHTML =
+      '<b>Stopped early.</b> config.js did not load, so the page cannot know where the booking server is.';
+    return;
+  }
+
+  // 6. Read test (this is how the site loads courses)
+  var t0 = new Date().getTime();
+  var cb = 'chk' + t0;
+  var done = false;
+  var timer = setTimeout(function () {
+    if (done) return; done = true;
+    add('g', '6. Reading from the booking server', 'TIMED OUT after 25 seconds', 'bad');
+    finish();
+  }, 25000);
+  window[cb] = function (data) {
+    if (done) return; done = true; clearTimeout(timer);
+    var ms = new Date().getTime() - t0;
+    var okr = data && data.ok;
+    add('g', '6. Reading from the booking server',
+        (okr ? 'SUCCESS in ' + ms + ' ms' : 'Server replied with an error') +
+        (okr && data.catalog ? ' - ' + data.catalog.length + ' courses received' : ''),
+        okr ? 'ok' : 'bad');
+    finish();
+  };
+  var sc = document.createElement('script');
+  sc.onerror = function () {
+    if (done) return; done = true; clearTimeout(timer);
+    add('g', '6. Reading from the booking server',
+        'FAILED - the request was blocked or refused', 'bad');
+    finish();
+  };
+  sc.src = api + (api.indexOf('?') > -1 ? '&' : '?') + 'action=bootstrap&callback=' + cb + '&_=' + t0;
+  document.head.appendChild(sc);
+  add('g', '6. Reading from the booking server', 'checking…', 'wait');
+
+  function finish() {
+    var bad = out.querySelectorAll('.bad').length;
+    var v = document.getElementById('verdict');
+    if (bad === 0) {
+      v.style.background = '#E6F4EA'; v.style.borderColor = '#C8E6D3';
+      v.innerHTML = '<b>Everything works on this device.</b> Booking should function normally. ' +
+                    'If it still does not, please screenshot the exact message you see.';
+    } else {
+      v.style.background = '#FCE7EB'; v.style.borderColor = '#F6C7D1';
+      v.innerHTML = '<b>' + bad + ' check(s) failed.</b> The red items above show exactly where it stops. ' +
+                    'Please send this screenshot to us.';
+    }
+  }
+})();
+</script>
+</body>
+</html>
