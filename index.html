@@ -115,7 +115,11 @@ nav.main{background:var(--white);border-bottom:1px solid var(--grey-line);positi
 .hero.has-photo .point{background:rgba(10,14,22,.42);border-color:rgba(255,255,255,.16)}
 .hero::after{content:"";position:absolute;inset:auto 0 0 0;height:120px;z-index:1;
   background:linear-gradient(to top,rgba(255,227,236,.16),transparent)}
-.hero-inner{position:relative;z-index:2;padding:clamp(48px,8vw,92px) 0 clamp(40px,6vw,72px)}
+/* The padding SHORTHAND here used to reset .wrap's 20px side padding to 0, which is
+   why the hero headline and buttons touched both screen edges on a phone while the
+   cards below were correctly inset. Using padding-block leaves the sides alone. */
+.hero-inner{position:relative;z-index:2;
+  padding-top:clamp(48px,8vw,92px);padding-bottom:clamp(40px,6vw,72px)}
 .hero h2{font-size:clamp(26px,4.6vw,46px);max-width:19ch;color:#fff}
 .hero .jp{display:block;font-size:clamp(15px,2.2vw,22px);color:#FFD9E5;font-weight:500;margin-bottom:10px;letter-spacing:.06em}
 .hero p.lede{max-width:52ch;margin-top:14px;color:#C4CEDC;font-size:clamp(14px,1.7vw,16.5px)}
@@ -216,6 +220,7 @@ select:disabled{background:var(--grey);color:var(--ink-faint);cursor:not-allowed
 /* ---------- table ---------- */
 .tablewrap{overflow-x:auto;border:1px solid var(--grey-line);border-radius:var(--r-md)}
 table{width:100%;border-collapse:collapse;font-size:13.5px;min-width:720px}
+
 th{background:var(--pink);color:var(--pink-ink);text-align:left;padding:11px 13px;font-size:11.5px;
   letter-spacing:.07em;text-transform:uppercase;font-weight:700;white-space:nowrap}
 td{padding:12px 13px;border-top:1px solid var(--grey-line);vertical-align:middle}
@@ -251,6 +256,22 @@ footer{background:var(--night);color:#AEB8C6;margin-top:60px;padding:34px 0;font
 footer a{color:#CFDCEA}
 .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
+/* ---------- phone layout ----------
+   Desktop is untouched: everything below only applies at 700px and under.
+   The schedule table hides Class and Class code there, because Level already
+   identifies the course and those two columns were what forced sideways scrolling. */
+@media (max-width:700px){
+  .tablewrap table{min-width:0}
+  .tablewrap th:nth-child(1),.tablewrap td:nth-child(1),
+  .tablewrap th:nth-child(3),.tablewrap td:nth-child(3){display:none}
+  .tablewrap th,.tablewrap td{padding:10px 8px}
+  table{font-size:13px}
+  .clock{min-width:0;flex:1}
+  .clocks{width:100%}
+  .hero h2{font-size:clamp(24px,7vw,32px)}
+  .btn{padding:14px 22px}
+  .hero-cta .btn{flex:1 1 auto;justify-content:center}
+}
 .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;
   border-radius:50%;animation:spin .7s linear infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
@@ -582,7 +603,7 @@ footer a{color:#CFDCEA}
       <strong id="footName">MAN-TEN JLPT JFT E-LEARNING REVIEW AND TUTORIAL CENTER</strong><br>
       <span id="footHours">—</span><br>
       <a id="footMail" href="#">—</a><br>
-      <a id="footFb" href="#" target="_blank" rel="noopener noreferrer" hidden>Follow us on Facebook</a>
+      <a id="footFb" href="#" target="_blank" rel="noopener noreferrer" hidden>Message us on Facebook Messenger</a>
     </div>
     <div style="text-align:right">
       <a href="#catalog">Book a class</a> · <a href="#myclass">My Class</a><br>
