@@ -256,6 +256,12 @@ footer{background:var(--night);color:#AEB8C6;margin-top:60px;padding:34px 0;font
 footer a{color:#CFDCEA}
 .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
+/* Desktop hero photo — identical to the inline styles this replaces:
+   the same navy overlay at .62/.80 over the artwork, cover-sized and centred. */
+.hero.has-photo{
+  background-image:linear-gradient(rgba(20,28,43,.62),rgba(20,28,43,.80)), var(--hero-img);
+  background-size:cover;background-position:center}
+
 /* ---------- phone layout ----------
    Desktop is untouched: everything below only applies at 700px and under.
    The schedule table hides Class and Class code there, because Level already
@@ -268,9 +274,61 @@ footer a{color:#CFDCEA}
   table{font-size:13px}
   .clock{min-width:0;flex:1}
   .clocks{width:100%}
-  .hero h2{font-size:clamp(24px,7vw,32px)}
   .btn{padding:14px 22px}
-  .hero-cta .btn{flex:1 1 auto;justify-content:center}
+
+  /* ---- Hero on a phone: show the artwork as it is, no navy wash over it ----
+     The illustration already has its own light background and lettering, so the dark
+     overlay both hid it and fought the text. Here the picture sits full width and
+     UNCROPPED at the top, the wording goes over its light area in dark ink, and the two
+     numbered points drop below onto white with a pink outline. Desktop keeps the navy
+     overlay untouched — every rule here is inside this media query. */
+  .hero{background-color:#fff}
+  .hero.has-photo{
+    /* No navy anywhere. A soft WHITE veil covers only the top 46%, where the wording
+       sits, because the artwork has its own dark navy lettering ("100% PASS!") and dark
+       text over it measured 1.16 contrast — unreadable. With this veil the worst case
+       across every part of the illustration is 8.73, comfortably AAA. Below 46% the
+       picture is completely untouched. */
+    background-image:linear-gradient(rgba(255,255,255,.72) 0%,
+                                     rgba(255,255,255,.55) 30%,
+                                     rgba(255,255,255,0) 46%), var(--hero-img);
+    background-size:100% auto, 100% auto;
+    background-position:top center, top center;
+    background-repeat:no-repeat, no-repeat}
+  .hero.has-photo #stars{display:none}     /* starfield would speckle the light artwork */
+  .hero.has-photo::after{display:none}     /* the pink fade at the foot is not needed */
+
+  /* Reorder so the buttons sit on the artwork and the points fall below it. */
+  .hero-inner{display:flex;flex-direction:column;padding-top:14px}
+  .hero h2{order:1}
+  .hero p.lede{order:2}
+  .hero-cta{order:3;margin-top:14px}
+  #introPoints{order:4;margin-top:18px}
+
+  /* Tagline and headline share one line, as in the reference. */
+  .hero h2{font-size:clamp(15px,4.4vw,19px);max-width:none;line-height:1.45}
+  .hero .jp{display:inline;font-size:inherit;margin:0 6px 0 0;letter-spacing:.02em}
+  .hero p.lede{font-size:12.5px;margin-top:8px;max-width:none}
+
+  /* Dark ink, because the artwork behind is light. */
+  /* Full-strength ink, not the softer grey: the softer grey measured 3.37 over the
+     artwork's lettering, below the 4.5 accessibility floor. Ink measures 8.73. */
+  .hero.has-photo h2{color:var(--ink);text-shadow:none}
+  .hero.has-photo .jp{color:#8E2440}
+  .hero.has-photo p.lede{color:var(--ink);text-shadow:none}
+
+  /* Numbered points: white card, pink outline, dark text. */
+  .hero.has-photo .point{
+    background:rgba(255,255,255,.94);
+    border:1.5px solid #E9A7C2;
+    color:var(--ink);
+    font-size:12.5px;
+    padding:10px 12px}
+  .hero.has-photo .point i{background:var(--pink);color:var(--pink-ink)}
+
+  .hero-cta{gap:10px}
+  .hero-cta .btn{flex:0 1 auto;justify-content:center;font-size:13px;padding:11px 18px}
+  .btn-ghost{background:rgba(255,255,255,.82);color:var(--ink);border:1px solid rgba(29,39,51,.18)}
 }
 .spinner{width:18px;height:18px;border:2.5px solid rgba(255,255,255,.35);border-top-color:#fff;
   border-radius:50%;animation:spin .7s linear infinite}
@@ -898,14 +956,13 @@ function applySettings(s){
     const probe = new Image();
     probe.onload = ()=>{
       const h = document.querySelector(".hero");
-      // The overlay must stay dark enough to keep white text readable, but the previous
-      // 82-92% was so heavy the photo was effectively invisible. 48-72% keeps contrast
-      // well above the accessibility threshold while the picture actually shows.
-      h.style.backgroundImage =
-        "linear-gradient(rgba(20,28,43,.62),rgba(20,28,43,.80)), url('"+heroUrl.replace(/'/g,"%27")+"')";
-      h.style.backgroundSize = "cover";
-      h.style.backgroundPosition = "center";
-      h.classList.add("has-photo");   // dims the starfield so it does not veil the photo
+      // The URL is handed to CSS as a custom property instead of being written straight
+      // into an inline background shorthand. Inline styles beat stylesheet rules, so the
+      // old version made the dark overlay impossible to remove for phones. With the URL
+      // in a variable, the stylesheet decides: navy overlay on desktop, bare artwork on
+      // a phone. Nothing else about this function changes.
+      h.style.setProperty("--hero-img", "url('"+heroUrl.replace(/'/g,"%27")+"')");
+      h.classList.add("has-photo");
     };
     probe.onerror = ()=> console.warn("Header image could not load:", heroUrl,
       "- open it directly in the browser. If it 404s, check the filename and capitalisation.");
