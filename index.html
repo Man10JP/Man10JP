@@ -284,17 +284,19 @@ footer a{color:#CFDCEA}
      overlay untouched — every rule here is inside this media query. */
   .hero{background-color:#fff}
   .hero.has-photo{
-    /* No navy anywhere. A soft WHITE veil covers only the top 46%, where the wording
-       sits, because the artwork has its own dark navy lettering ("100% PASS!") and dark
-       text over it measured 1.16 contrast — unreadable. With this veil the worst case
-       across every part of the illustration is 8.73, comfortably AAA. Below 46% the
-       picture is completely untouched. */
-    background-image:linear-gradient(rgba(255,255,255,.72) 0%,
-                                     rgba(255,255,255,.55) 30%,
-                                     rgba(255,255,255,0) 46%), var(--hero-img);
-    background-size:100% auto, 100% auto;
-    background-position:top center, top center;
-    background-repeat:no-repeat, no-repeat}
+    /* The artwork sits as a clean band at the very top, nothing over it and nothing
+       cropped. No navy, and no white veil either — it is no longer needed, because the
+       wording now sits BELOW the picture on plain white instead of on top of it. */
+    background-image:var(--hero-img);
+    background-size:100% auto;
+    background-position:top center;
+    background-repeat:no-repeat}
+
+  /* Reserve exactly the height the artwork occupies, measured from the real image, so
+     the text always begins underneath it — at any phone width, with any artwork.
+     The 0.5 fallback applies only if the image has not reported its size yet. */
+  .hero.has-photo .hero-inner{
+    padding-top:calc(100vw * var(--hero-ratio, 0.5) + 18px)}
   .hero.has-photo #stars{display:none}     /* starfield would speckle the light artwork */
   .hero.has-photo::after{display:none}     /* the pink fade at the foot is not needed */
 
@@ -305,17 +307,16 @@ footer a{color:#CFDCEA}
   .hero-cta{order:3;margin-top:14px}
   #introPoints{order:4;margin-top:18px}
 
-  /* Tagline and headline share one line, as in the reference. */
-  .hero h2{font-size:clamp(15px,4.4vw,19px);max-width:none;line-height:1.45}
-  .hero .jp{display:inline;font-size:inherit;margin:0 6px 0 0;letter-spacing:.02em}
-  .hero p.lede{font-size:12.5px;margin-top:8px;max-width:none}
+  /* Japanese tagline on its own line, English headline on the line below it. */
+  .hero h2{font-size:clamp(19px,5.6vw,25px);max-width:none;line-height:1.35}
+  .hero .jp{display:block;font-size:clamp(13px,3.8vw,15px);margin:0 0 4px;letter-spacing:.02em}
+  .hero p.lede{font-size:13px;line-height:1.6;margin-top:10px;max-width:none}
 
   /* Dark ink, because the artwork behind is light. */
-  /* Full-strength ink, not the softer grey: the softer grey measured 3.37 over the
-     artwork's lettering, below the 4.5 accessibility floor. Ink measures 8.73. */
+  /* All wording now sits on plain white, so contrast is at its maximum. */
   .hero.has-photo h2{color:var(--ink);text-shadow:none}
   .hero.has-photo .jp{color:#8E2440}
-  .hero.has-photo p.lede{color:var(--ink);text-shadow:none}
+  .hero.has-photo p.lede{color:var(--ink-soft);text-shadow:none}
 
   /* Numbered points: white card, pink outline, dark text. */
   .hero.has-photo .point{
@@ -962,6 +963,12 @@ function applySettings(s){
       // in a variable, the stylesheet decides: navy overlay on desktop, bare artwork on
       // a phone. Nothing else about this function changes.
       h.style.setProperty("--hero-img", "url('"+heroUrl.replace(/'/g,"%27")+"')");
+      // Record the artwork's shape. On a phone the wording is placed BELOW the picture,
+      // and only the real ratio tells CSS how much room the picture needs. Without it
+      // the text lands on top of the "ManTen 100% PASS!" lettering.
+      if(probe.naturalWidth > 0){
+        h.style.setProperty("--hero-ratio", (probe.naturalHeight/probe.naturalWidth).toFixed(4));
+      }
       h.classList.add("has-photo");
     };
     probe.onerror = ()=> console.warn("Header image could not load:", heroUrl,
