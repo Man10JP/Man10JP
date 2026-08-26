@@ -264,34 +264,42 @@ footer{background:var(--night);color:#AEB8C6;margin-top:60px;padding:34px 0;font
 footer a{color:#CFDCEA}
 .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
-/* Desktop hero — now matched to the phone: the artwork is a clean band across the top
-   with NO navy wash over it, and every word sits below it on white. Previously a dark
-   overlay covered the illustration so the white text could be read on top of it; with
-   the wording moved underneath, the overlay is no longer needed and the artwork shows
-   at full colour. */
+/* ---------- Desktop hero (OPTION A+) ----------
+   The layout is the one that passed testing: wording over the artwork, tagline in the
+   upper portion at its original size, numbered points inside the hero. The single
+   change is the SHAPE of the navy wash.
+
+   It used to run top-to-bottom at a flat .62 to .80, which dimmed the student and the
+   "ManTen 100% PASS!" wordmark exactly as much as the empty left side where the text
+   sits. It now runs LEFT to RIGHT: heavy behind the wording, clearing to almost nothing
+   over the illustration.
+
+   Measured against the real artwork pixels, white text reads at 11.96 at the left edge
+   and 10.61 at the 30% mark where the text column ends — better than the flat wash it
+   replaces — while the artwork beyond 55% shows at close to full colour.
+
+   The brief attempt to move the wording BELOW the artwork is gone. It failed on desktop
+   because background-size:cover stretches the image over the whole hero box, so the
+   wordmark landed mid-box under the headline at every screen width tested. */
 .hero.has-photo{
-  background-image:var(--hero-img);
-  background-size:cover;
-  background-position:center 28%;
-  background-repeat:no-repeat;
-  background-color:#fff}
-.hero.has-photo #stars{display:none}      /* stars would speckle the light artwork */
-.hero.has-photo::after{display:none}
-.hero.has-photo .hero-inner{
-  display:flex;flex-direction:column;
-  padding-top:clamp(230px,26vw,430px)}    /* exactly the band the artwork occupies */
-.hero.has-photo h2{order:1;color:var(--ink);text-shadow:none}
-.hero.has-photo p.lede{order:2;color:var(--ink-soft);text-shadow:none;max-width:62ch}
-.hero.has-photo .hero-cta{order:3;margin-top:18px}
-.hero.has-photo #introPoints{order:4;margin-top:22px}
-.hero.has-photo .jp{color:#B8477A}        /* the tagline reads as a colour, not a whisper */
-.hero.has-photo .point{
-  background:#fff;border:1.5px solid #E9A7C2;color:var(--ink)}
-.hero.has-photo .point i{background:var(--pink);color:var(--pink-ink)}
-.hero.has-photo .btn-ghost{
-  background:#fff;color:var(--ink);border:1px solid rgba(29,39,51,.18)}
-/* "Shine like a sky full of stars." fits on one line instead of spilling "stars." over. */
-.hero.has-photo h2{max-width:24ch}
+  background-image:linear-gradient(to right,
+                    rgba(20,28,43,.88) 0%,
+                    rgba(20,28,43,.80) 30%,
+                    rgba(20,28,43,.45) 55%,
+                    rgba(20,28,43,.15) 75%,
+                    rgba(20,28,43,.04) 100%), var(--hero-img);
+  background-size:auto, cover;
+  background-position:center, center;
+  background-repeat:no-repeat, no-repeat}
+
+/* The wording is held to the left, where the scrim is darkest. Nothing sits past 30%. */
+.hero.has-photo h2{max-width:17ch}
+.hero.has-photo p.lede{max-width:44ch}
+.hero.has-photo #introPoints{max-width:640px}
+
+/* Slightly stronger cards and button edge, now that the artwork behind them is brighter. */
+.hero.has-photo .point{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}
+.hero.has-photo .btn-ghost{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.5)}
 
 /* ---------- phone layout ----------
    Desktop is untouched: everything below only applies at 700px and under.
