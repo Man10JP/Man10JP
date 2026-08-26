@@ -226,6 +226,14 @@ th{background:var(--pink);color:var(--pink-ink);text-align:left;padding:11px 13p
 td{padding:12px 13px;border-top:1px solid var(--grey-line);vertical-align:middle}
 tr.full td{color:var(--ink-faint);background:#FBFAF9}
 
+/* Times column: Philippine time, then Japan time beneath it in grey. Two options are
+   separated by a small gap rather than run together on one line. */
+.tslot{display:block;margin-bottom:7px}
+.tslot:last-child{margin-bottom:0}
+.tph{display:block;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tjp{display:block;white-space:nowrap;font-size:12.5px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
+.m-only{display:none}
+
 /* ---------- notices ---------- */
 .notice{border-radius:var(--r-sm);padding:13px 15px;font-size:14px;margin:14px 0;border:1px solid}
 .notice.info{background:var(--sky);border-color:#C9E0F4;color:#1B4F7C}
@@ -256,22 +264,64 @@ footer{background:var(--night);color:#AEB8C6;margin-top:60px;padding:34px 0;font
 footer a{color:#CFDCEA}
 .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
-/* Desktop hero photo — identical to the inline styles this replaces:
-   the same navy overlay at .62/.80 over the artwork, cover-sized and centred. */
+/* Desktop hero — now matched to the phone: the artwork is a clean band across the top
+   with NO navy wash over it, and every word sits below it on white. Previously a dark
+   overlay covered the illustration so the white text could be read on top of it; with
+   the wording moved underneath, the overlay is no longer needed and the artwork shows
+   at full colour. */
 .hero.has-photo{
-  background-image:linear-gradient(rgba(20,28,43,.62),rgba(20,28,43,.80)), var(--hero-img);
-  background-size:cover;background-position:center}
+  background-image:var(--hero-img);
+  background-size:cover;
+  background-position:center 28%;
+  background-repeat:no-repeat;
+  background-color:#fff}
+.hero.has-photo #stars{display:none}      /* stars would speckle the light artwork */
+.hero.has-photo::after{display:none}
+.hero.has-photo .hero-inner{
+  display:flex;flex-direction:column;
+  padding-top:clamp(230px,26vw,430px)}    /* exactly the band the artwork occupies */
+.hero.has-photo h2{order:1;color:var(--ink);text-shadow:none}
+.hero.has-photo p.lede{order:2;color:var(--ink-soft);text-shadow:none;max-width:62ch}
+.hero.has-photo .hero-cta{order:3;margin-top:18px}
+.hero.has-photo #introPoints{order:4;margin-top:22px}
+.hero.has-photo .jp{color:#B8477A}        /* the tagline reads as a colour, not a whisper */
+.hero.has-photo .point{
+  background:#fff;border:1.5px solid #E9A7C2;color:var(--ink)}
+.hero.has-photo .point i{background:var(--pink);color:var(--pink-ink)}
+.hero.has-photo .btn-ghost{
+  background:#fff;color:var(--ink);border:1px solid rgba(29,39,51,.18)}
+/* "Shine like a sky full of stars." fits on one line instead of spilling "stars." over. */
+.hero.has-photo h2{max-width:24ch}
 
 /* ---------- phone layout ----------
    Desktop is untouched: everything below only applies at 700px and under.
    The schedule table hides Class and Class code there, because Level already
    identifies the course and those two columns were what forced sideways scrolling. */
 @media (max-width:700px){
-  .tablewrap table{min-width:0}
+  /* Three columns on a phone, still a real table:
+       LEVEL (with the start dates folded underneath)
+       TIMES (Philippine time, Japan time beneath in grey)
+       STATUS (with seats and the batch folded underneath)
+     Measured at 12px with 6px cell padding this comes to about 295px, so it fits a
+     360px screen with room to spare. Five columns could not: even squeezed to 11px
+     they measured 343px against 320px of usable width. */
+  .tablewrap table{min-width:0;table-layout:auto}
   .tablewrap th:nth-child(1),.tablewrap td:nth-child(1),
-  .tablewrap th:nth-child(3),.tablewrap td:nth-child(3){display:none}
-  .tablewrap th,.tablewrap td{padding:10px 8px}
-  table{font-size:13px}
+  .tablewrap th:nth-child(3),.tablewrap td:nth-child(3),
+  .tablewrap th:nth-child(4),.tablewrap td:nth-child(4),
+  .tablewrap th:nth-child(6),.tablewrap td:nth-child(6){display:none}
+  .tablewrap th,.tablewrap td{padding:9px 6px;vertical-align:top}
+  table{font-size:12px}
+  .tablewrap th{font-size:10px;letter-spacing:.05em}
+
+  /* Folded-in detail, shown only here. */
+  .m-only{display:block;font-weight:400;font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.45}
+  .m-dates b{font-weight:700;color:var(--ink)}
+  .tjp{font-size:11px}
+  /* The header already says "TIMES (PHT / JST)", so the per-row suffix is redundant
+     and costs about 30px of width. Hidden here only. */
+  .tjp .jstsuffix{display:none}
+  .tablewrap .chip{font-size:10.5px;padding:3px 8px}
   .clock{min-width:0;flex:1}
   .clocks{width:100%}
   .btn{padding:14px 22px}
@@ -721,7 +771,16 @@ function sanitize(html){
       tint: Math.random()<.22 ? "255,227,236" : (Math.random()<.3 ? "228,240,251" : "255,255,255")
     }));
   }
+  // Is the canvas actually on screen? Hiding it with CSS (which is what happens on a
+  // phone, and whenever a header photo is set) stops it being DRAWN but does nothing to
+  // this loop — it carried on repainting about 60 times a second onto something nobody
+  // could see, burning battery for no result. offsetParent is null for a display:none
+  // element, which is the cheapest possible way to ask.
+  function visible(){ return cv.offsetParent !== null; }
+
   function draw(){
+    raf = null;
+    if(!visible()) return;                 // nothing to show: stop until it matters again
     ctx.clearRect(0,0,cv.width,cv.height);
     for(const st of stars){
       if(!reduce){ st.a += st.s; if(st.a>1||st.a<.08) st.s*=-1; }
@@ -731,14 +790,17 @@ function sanitize(html){
     }
     if(!reduce) raf = requestAnimationFrame(draw);
   }
+  // Restart it if the canvas comes back — rotating a phone, or resizing a desktop
+  // window back above the mobile breakpoint.
+  function kick(){ if(!raf && !document.hidden && visible()) draw(); }
   size(); draw();
-  addEventListener("resize",()=>{ size(); if(reduce) draw(); },{passive:true});
+  addEventListener("resize",()=>{ size(); if(reduce) draw(); else kick(); },{passive:true});
   // Phones fire orientationchange without a reliable resize; without this the
   // starfield keeps the old canvas size after the screen is rotated.
-  addEventListener("orientationchange",()=>{ setTimeout(()=>{ size(); if(reduce) draw(); },250); },{passive:true});
+  addEventListener("orientationchange",()=>{ setTimeout(()=>{ size(); if(reduce) draw(); else kick(); },250); },{passive:true});
   document.addEventListener("visibilitychange",()=>{
     if(document.hidden && raf){ cancelAnimationFrame(raf); raf=null; }
-    else if(!document.hidden && !reduce && !raf) draw();
+    else if(!document.hidden && !reduce) kick();
   });
 })();
 
@@ -1193,21 +1255,45 @@ function renderCourses(){
 function renderSchedule(list){
   if(!list.length){ $("schedBody").innerHTML='<tr><td colspan="7">No classes scheduled yet.</td></tr>'; return; }
   $("schedBody").innerHTML = list.map(s=>{
+    // Philippine time on its own line, Japan time beneath it in grey. The old version
+    // joined them with a slash on one line, which wrapped mid-time on a phone
+    // ("10:00 AM - 11:30 / AM / 11:00 AM -") and made the column far too wide.
     const times = s.timeOptions.length
-      ? s.timeOptions.map(t=>escapeHtml(t)+" <span style='color:var(--ink-faint)'>/ "+escapeHtml(phToJp(t))+"</span>").join("<br>")
+      ? s.timeOptions.map(t=>
+          '<span class="tslot">'+
+            '<span class="tph">'+escapeHtml(t)+'</span>'+
+            '<span class="tjp">'+escapeHtml(phToJp(t)).replace(" (JST)",' <span class="jstsuffix">(JST)</span>')+'</span>'+
+          '</span>').join("")
       : "—";
+
+    const dates = s.actualStart
+      ? "<b>"+escapeHtml(s.actualStart)+"</b> (confirmed)"
+      : (s.dateOptions.map(escapeHtml).join("<br>")||"—");
+    const seats = (s.full?"0":s.remaining)+' / '+s.max;
+
     // Seats now refer to the batch currently taking students, so name it. Without this
     // a fresh batch looks like the seat count mysteriously reset.
     const batchTag = s.currentBatch ? ' <span class="chip">'+escapeHtml(s.currentBatch)+'</span>' : '';
+
+    // "Almost full" was an absolute test (5 or fewer seats left), so a brand-new EMPTY
+    // batch of a small class always read "Almost full" and could never read "Open".
+    // It is now relative to the class size as well.
+    const nearlyFull = !s.full && s.remaining < s.max && s.remaining <= Math.max(1, Math.min(5, Math.ceil(s.max*0.25)));
     const status = s.full ? '<span class="chip full">Full</span>'
-      : (s.remaining<=5 ? '<span class="chip warn">Almost full</span>' : '<span class="chip ok">Open</span>');
+      : (nearlyFull ? '<span class="chip warn">Almost full</span>' : '<span class="chip ok">Open</span>');
+
+    // The .m-only spans are hidden on desktop and only appear on a phone, where the
+    // Start-options and Seats columns are folded into these two cells instead.
     return '<tr'+(s.full?' class="full"':'')+'>'+
-      '<td>'+escapeHtml(s.classType)+'</td><td>'+escapeHtml(s.level)+'</td>'+
+      '<td>'+escapeHtml(s.classType)+'</td>'+
+      '<td>'+escapeHtml(s.level)+
+        '<span class="m-only m-dates">'+dates+'</span></td>'+
       '<td><code>'+escapeHtml(s.classCode)+'</code></td>'+
-      '<td>'+(s.actualStart? "<b>"+escapeHtml(s.actualStart)+"</b> (confirmed)" : (s.dateOptions.map(escapeHtml).join("<br>")||"—"))+'</td>'+
+      '<td>'+dates+'</td>'+
       '<td>'+times+'</td>'+
-      '<td>'+(s.full?"0":s.remaining)+' / '+s.max+'</td>'+
-      '<td>'+status+batchTag+'</td></tr>';
+      '<td>'+seats+'</td>'+
+      '<td>'+status+batchTag+
+        '<span class="m-only m-seats">'+seats+' seats</span></td></tr>';
   }).join("");
 }
 
