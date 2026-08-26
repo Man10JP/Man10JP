@@ -316,8 +316,10 @@ footer a{color:#CFDCEA}
    three cards. The pair inside the hero is kept in place for phones, where the stacked
    layout still reads better with them there. */
 .hero .hero-cta{display:none}
-.cta-band{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
-.cta-band .btn{min-width:200px}
+/* Left-aligned so the buttons line up with the headline, lede and numbered points
+   directly above them — one continuous left edge down the whole page. */
+.cta-band{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-start;margin-bottom:30px}
+.cta-band .btn{min-width:190px}
 
 /* ---------- phone layout ----------
    Desktop is untouched: everything below only applies at 700px and under.
