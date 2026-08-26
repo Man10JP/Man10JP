@@ -282,24 +282,42 @@ footer a{color:#CFDCEA}
    because background-size:cover stretches the image over the whole hero box, so the
    wordmark landed mid-box under the headline at every screen width tested. */
 .hero.has-photo{
+  /* Scrim rebalanced for the wider text column. The headline now runs to about 53% of
+     the content box and the lede to 46%, so the dark zone is held out to 55% before it
+     clears. Measured against the trimmed artwork the worst contrast anywhere text sits
+     is 6.40 — above the 4.5 floor — while the student still shows at 68% of her own
+     colour at 72% across, and 95% at the right edge. */
   background-image:linear-gradient(to right,
-                    rgba(20,28,43,.88) 0%,
-                    rgba(20,28,43,.80) 30%,
-                    rgba(20,28,43,.45) 55%,
-                    rgba(20,28,43,.15) 75%,
-                    rgba(20,28,43,.04) 100%), var(--hero-img);
+                    rgba(20,28,43,.90) 0%,
+                    rgba(20,28,43,.87) 35%,
+                    rgba(20,28,43,.76) 55%,
+                    rgba(20,28,43,.32) 72%,
+                    rgba(20,28,43,.10) 88%,
+                    rgba(20,28,43,.05) 100%), var(--hero-img);
   background-size:auto, cover;
   background-position:center, center;
   background-repeat:no-repeat, no-repeat}
 
-/* The wording is held to the left, where the scrim is darkest. Nothing sits past 30%. */
-.hero.has-photo h2{max-width:17ch}
-.hero.has-photo p.lede{max-width:44ch}
-.hero.has-photo #introPoints{max-width:640px}
+/* One line for the headline, two for the lede. 34px is three steps down from 46px,
+   which keeps the sentence whole without pushing it into the bright half. */
+.hero.has-photo h2{font-size:clamp(24px,2.6vw,34px);max-width:none;line-height:1.3}
+.hero.has-photo h2 .jp{font-size:clamp(14px,1.3vw,17px);margin-bottom:8px}
+/* A pixel cap, not ch: 60ch measured 486px, just under what two lines need, so the
+   sentence still broke to three. 580px holds it at two with room to spare, and is 52%
+   of the content box — inside the dark part of the scrim. */
+.hero.has-photo p.lede{font-size:15px;line-height:1.65;max-width:580px;margin-top:12px}
 
-/* Slightly stronger cards and button edge, now that the artwork behind them is brighter. */
+/* The numbered points now close the hero, so they carry the bottom edge. Matching their
+   width to the lede keeps a single clean left-aligned column down the whole block. */
+.hero.has-photo #introPoints{max-width:580px;margin-top:20px}
 .hero.has-photo .point{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}
-.hero.has-photo .btn-ghost{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.5)}
+
+/* The two hero buttons live below the hero on desktop, in the white band above the
+   three cards. The pair inside the hero is kept in place for phones, where the stacked
+   layout still reads better with them there. */
+.hero .hero-cta{display:none}
+.cta-band{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-bottom:30px}
+.cta-band .btn{min-width:200px}
 
 /* ---------- phone layout ----------
    Desktop is untouched: everything below only applies at 700px and under.
@@ -333,6 +351,12 @@ footer a{color:#CFDCEA}
   .clock{min-width:0;flex:1}
   .clocks{width:100%}
   .btn{padding:14px 22px}
+
+  /* The phone keeps the buttons inside the hero exactly as approved, and hides the
+     desktop band. Without these two lines the desktop relocation would follow through
+     to mobile and change a layout that has already passed testing. */
+  .hero .hero-cta{display:flex}
+  .cta-band{display:none}
 
   /* ---- Hero on a phone: show the artwork as it is, no navy wash over it ----
      The illustration already has its own light background and lettering, so the dark
@@ -453,7 +477,11 @@ footer a{color:#CFDCEA}
     </div>
   </div>
 
-  <div class="wrap" style="padding-top:46px">
+  <div class="wrap" style="padding-top:38px">
+    <div class="cta-band">
+      <a class="btn btn-primary" href="#catalog">Book a class now</a>
+      <a class="btn btn-quiet" href="#schedule">See the schedule</a>
+    </div>
     <div class="grid g3">
       <div class="card tint-pink">
         <h3>Choose your course</h3>
