@@ -115,9 +115,6 @@ nav.main{background:var(--white);border-bottom:1px solid var(--grey-line);positi
 .hero.has-photo .point{background:rgba(10,14,22,.42);border-color:rgba(255,255,255,.16)}
 .hero::after{content:"";position:absolute;inset:auto 0 0 0;height:120px;z-index:1;
   background:linear-gradient(to top,rgba(255,227,236,.16),transparent)}
-/* The padding SHORTHAND here used to reset .wrap's 20px side padding to 0, which is
-   why the hero headline and buttons touched both screen edges on a phone while the
-   cards below were correctly inset. Using padding-block leaves the sides alone. */
 .hero-inner{position:relative;z-index:2;
   padding-top:clamp(48px,8vw,92px);padding-bottom:clamp(40px,6vw,72px)}
 .hero h2{font-size:clamp(26px,4.6vw,46px);max-width:19ch;color:#fff}
@@ -226,8 +223,6 @@ th{background:var(--pink);color:var(--pink-ink);text-align:left;padding:11px 13p
 td{padding:12px 13px;border-top:1px solid var(--grey-line);vertical-align:middle}
 tr.full td{color:var(--ink-faint);background:#FBFAF9}
 
-/* Times column: Philippine time, then Japan time beneath it in grey. Two options are
-   separated by a small gap rather than run together on one line. */
 .tslot{display:block;margin-bottom:7px}
 .tslot:last-child{margin-bottom:0}
 .tph{display:block;white-space:nowrap;font-variant-numeric:tabular-nums}
@@ -264,94 +259,42 @@ footer{background:var(--night);color:#AEB8C6;margin-top:60px;padding:34px 0;font
 footer a{color:#CFDCEA}
 .foot-row{display:flex;justify-content:space-between;gap:20px;flex-wrap:wrap}
 
-/* ---------- Desktop hero (OPTION A+) ----------
-   The layout is the one that passed testing: wording over the artwork, tagline in the
-   upper portion at its original size, numbered points inside the hero. The single
-   change is the SHAPE of the navy wash.
-
-   It used to run top-to-bottom at a flat .62 to .80, which dimmed the student and the
-   "ManTen 100% PASS!" wordmark exactly as much as the empty left side where the text
-   sits. It now runs LEFT to RIGHT: heavy behind the wording, clearing to almost nothing
-   over the illustration.
-
-   Measured against the real artwork pixels, white text reads at 11.96 at the left edge
-   and 10.61 at the 30% mark where the text column ends — better than the flat wash it
-   replaces — while the artwork beyond 55% shows at close to full colour.
-
-   The brief attempt to move the wording BELOW the artwork is gone. It failed on desktop
-   because background-size:cover stretches the image over the whole hero box, so the
-   wordmark landed mid-box under the headline at every screen width tested. */
+/* ---------- Desktop hero (OPTION A+ - UPDATED DISPLAY) ---------- */
 .hero.has-photo{
-  /* Scrim rebalanced for the wider text column. The headline now runs to about 53% of
-     the content box and the lede to 46%, so the dark zone is held out to 55% before it
-     clears. Measured against the trimmed artwork the worst contrast anywhere text sits
-     is 6.40 — above the 4.5 floor — while the student still shows at 68% of her own
-     colour at 72% across, and 95% at the right edge. */
   background-image:linear-gradient(to right,
-                    rgba(20,28,43,.90) 0%,
-                    rgba(20,28,43,.88) 40%,
-                    rgba(20,28,43,.80) 66%,
-                    rgba(20,28,43,.34) 80%,
-                    rgba(20,28,43,.10) 92%,
+                    rgba(20,28,43,.92) 0%,
+                    rgba(20,28,43,.85) 40%,
+                    rgba(20,28,43,.40) 65%,
                     rgba(20,28,43,.05) 100%), var(--hero-img);
-  /* The artwork file is now supplied pre-trimmed, with its blank border removed, so the
-     drawing already reaches both edges. That makes the old 138% zoom unnecessary — plain
-     "cover" is enough, and it is far more predictable across screen sizes.
-     The drawing occupies y 17-88% of the file. At 1024-1600px all of it is visible; at
-     1920px about 5% is lost from the very bottom, which is ground and apron hem. The
-     student's head, at 17%, is kept at every width. */
-  background-size:auto, cover;
-  background-position:center, center 50%;
+  background-size:auto, contain;
+  background-position:center, right center;
   background-repeat:no-repeat, no-repeat;
-  background-color:#fff}
+  background-color:var(--night)}
 
-/* The height has to sit on .hero-inner, not on .hero. Putting it on .hero made the
-   section tall but left this flex container at content height, so justify-content had
-   nothing to distribute and everything stayed pinned to the top with a long empty gap
-   underneath. With the height here (padding included, since box-sizing is border-box)
-   the wording and the two cards centre as one group against the artwork — text top-left,
-   cards lower-left, illustration right. */
 .hero.has-photo .hero-inner{
   display:flex;flex-direction:column;justify-content:center;
-  min-height:clamp(430px, 36vw, 580px)}
+  min-height:clamp(440px, 34vw, 560px);
+  max-width:var(--maxw);
+  margin:0 auto}
 
-/* Sized up a step now that the hero is a controlled height. Still one line from 1024px
-   up: at 42px the sentence measures 727px, 65% of the content box, and the scrim is held
-   dark to 66% to cover it. */
-.hero.has-photo h2{font-size:clamp(28px,3.2vw,42px);max-width:none;line-height:1.26}
-.hero.has-photo h2 .jp{font-size:clamp(16px,1.6vw,20px);margin-bottom:10px}
-/* A pixel cap, not ch: 60ch measured 486px, just under what two lines need, so the
-   sentence still broke to three. 580px holds it at two with room to spare, and is 52%
-   of the content box — inside the dark part of the scrim. */
-.hero.has-photo p.lede{font-size:17px;line-height:1.6;max-width:660px;margin-top:14px}
+.hero.has-photo h2,
+.hero.has-photo p.lede,
+.hero.has-photo #introPoints{
+  max-width:540px}
 
-/* The numbered points now close the hero, so they carry the bottom edge. Matching their
-   width to the lede keeps a single clean left-aligned column down the whole block. */
-.hero.has-photo #introPoints{max-width:660px;margin-top:22px}
-.hero.has-photo .point{font-size:14.5px}
+.hero.has-photo h2{font-size:clamp(26px,3vw,40px);line-height:1.28}
+.hero.has-photo h2 .jp{font-size:clamp(15px,1.5vw,19px);margin-bottom:9px}
+.hero.has-photo p.lede{font-size:16px;line-height:1.6;margin-top:13px}
+
+.hero.has-photo #introPoints{margin-top:20px}
 .hero.has-photo .point{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}
 
-/* The two hero buttons live below the hero on desktop, in the white band above the
-   three cards. The pair inside the hero is kept in place for phones, where the stacked
-   layout still reads better with them there. */
 .hero .hero-cta{display:none}
-/* Left-aligned so the buttons line up with the headline, lede and numbered points
-   directly above them — one continuous left edge down the whole page. */
 .cta-band{display:flex;gap:12px;flex-wrap:wrap;justify-content:flex-start;margin-bottom:30px}
 .cta-band .btn{min-width:190px}
 
-/* ---------- phone layout ----------
-   Desktop is untouched: everything below only applies at 700px and under.
-   The schedule table hides Class and Class code there, because Level already
-   identifies the course and those two columns were what forced sideways scrolling. */
+/* ---------- phone layout ---------- */
 @media (max-width:700px){
-  /* Three columns on a phone, still a real table:
-       LEVEL (with the start dates folded underneath)
-       TIMES (Philippine time, Japan time beneath in grey)
-       STATUS (with seats and the batch folded underneath)
-     Measured at 12px with 6px cell padding this comes to about 295px, so it fits a
-     360px screen with room to spare. Five columns could not: even squeezed to 11px
-     they measured 343px against 320px of usable width. */
   .tablewrap table{min-width:0;table-layout:auto}
   .tablewrap th:nth-child(1),.tablewrap td:nth-child(1),
   .tablewrap th:nth-child(3),.tablewrap td:nth-child(3),
@@ -361,72 +304,46 @@ footer a{color:#CFDCEA}
   table{font-size:12px}
   .tablewrap th{font-size:10px;letter-spacing:.05em}
 
-  /* Folded-in detail, shown only here. */
   .m-only{display:block;font-weight:400;font-size:11.5px;color:var(--ink-soft);margin-top:3px;line-height:1.45}
   .m-dates b{font-weight:700;color:var(--ink)}
   .tjp{font-size:11px}
-  /* The header already says "TIMES (PHT / JST)", so the per-row suffix is redundant
-     and costs about 30px of width. Hidden here only. */
   .tjp .jstsuffix{display:none}
   .tablewrap .chip{font-size:10.5px;padding:3px 8px}
   .clock{min-width:0;flex:1}
   .clocks{width:100%}
   .btn{padding:14px 22px}
 
-  /* The phone keeps the buttons inside the hero exactly as approved, and hides the
-     desktop band. Without these two lines the desktop relocation would follow through
-     to mobile and change a layout that has already passed testing. */
   .hero .hero-cta{display:flex}
   .cta-band{display:none}
-  /* Guard only. On a phone the wording sits BELOW the artwork, so the hero is always
-     taller than this anyway and the rule never binds — but stating it removes any
-     chance of the desktop min-height reaching the approved mobile layout. */
   .hero.has-photo{min-height:0}
 
-  /* ---- Hero on a phone: show the artwork as it is, no navy wash over it ----
-     The illustration already has its own light background and lettering, so the dark
-     overlay both hid it and fought the text. Here the picture sits full width and
-     UNCROPPED at the top, the wording goes over its light area in dark ink, and the two
-     numbered points drop below onto white with a pink outline. Desktop keeps the navy
-     overlay untouched — every rule here is inside this media query. */
   .hero{background-color:#fff}
   .hero.has-photo{
-    /* The artwork sits as a clean band at the very top, nothing over it and nothing
-       cropped. No navy, and no white veil either — it is no longer needed, because the
-       wording now sits BELOW the picture on plain white instead of on top of it. */
     background-image:var(--hero-img);
     background-size:100% auto;
     background-position:top center;
     background-repeat:no-repeat}
 
-  /* Reserve exactly the height the artwork occupies, measured from the real image, so
-     the text always begins underneath it — at any phone width, with any artwork.
-     The 0.5 fallback applies only if the image has not reported its size yet. */
   .hero.has-photo .hero-inner{
     padding-top:calc(100vw * var(--hero-ratio, 0.5) + 18px);
-    min-height:0}     /* the desktop height rule moved onto this selector — cancel it here */
-  .hero.has-photo #stars{display:none}     /* starfield would speckle the light artwork */
-  .hero.has-photo::after{display:none}     /* the pink fade at the foot is not needed */
+    min-height:0}
+  .hero.has-photo #stars{display:none}
+  .hero.has-photo::after{display:none}
 
-  /* Reorder so the buttons sit on the artwork and the points fall below it. */
   .hero-inner{display:flex;flex-direction:column;padding-top:14px}
   .hero h2{order:1}
   .hero p.lede{order:2}
   .hero-cta{order:3;margin-top:14px}
   #introPoints{order:4;margin-top:18px}
 
-  /* Japanese tagline on its own line, English headline on the line below it. */
   .hero h2{font-size:clamp(19px,5.6vw,25px);max-width:none;line-height:1.35}
   .hero .jp{display:block;font-size:clamp(13px,3.8vw,15px);margin:0 0 4px;letter-spacing:.02em}
   .hero p.lede{font-size:13px;line-height:1.6;margin-top:10px;max-width:none}
 
-  /* Dark ink, because the artwork behind is light. */
-  /* All wording now sits on plain white, so contrast is at its maximum. */
   .hero.has-photo h2{color:var(--ink);text-shadow:none}
   .hero.has-photo .jp{color:#8E2440}
   .hero.has-photo p.lede{color:var(--ink-soft);text-shadow:none}
 
-  /* Numbered points: white card, pink outline, dark text. */
   .hero.has-photo .point{
     background:rgba(255,255,255,.94);
     border:1.5px solid #E9A7C2;
@@ -833,16 +750,12 @@ function sanitize(html){
       tint: Math.random()<.22 ? "255,227,236" : (Math.random()<.3 ? "228,240,251" : "255,255,255")
     }));
   }
-  // Is the canvas actually on screen? Hiding it with CSS (which is what happens on a
-  // phone, and whenever a header photo is set) stops it being DRAWN but does nothing to
-  // this loop — it carried on repainting about 60 times a second onto something nobody
-  // could see, burning battery for no result. offsetParent is null for a display:none
-  // element, which is the cheapest possible way to ask.
+
   function visible(){ return cv.offsetParent !== null; }
 
   function draw(){
     raf = null;
-    if(!visible()) return;                 // nothing to show: stop until it matters again
+    if(!visible()) return;
     ctx.clearRect(0,0,cv.width,cv.height);
     for(const st of stars){
       if(!reduce){ st.a += st.s; if(st.a>1||st.a<.08) st.s*=-1; }
@@ -852,13 +765,10 @@ function sanitize(html){
     }
     if(!reduce) raf = requestAnimationFrame(draw);
   }
-  // Restart it if the canvas comes back — rotating a phone, or resizing a desktop
-  // window back above the mobile breakpoint.
+
   function kick(){ if(!raf && !document.hidden && visible()) draw(); }
   size(); draw();
   addEventListener("resize",()=>{ size(); if(reduce) draw(); else kick(); },{passive:true});
-  // Phones fire orientationchange without a reliable resize; without this the
-  // starfield keeps the old canvas size after the screen is rotated.
   addEventListener("orientationchange",()=>{ setTimeout(()=>{ size(); if(reduce) draw(); else kick(); },250); },{passive:true});
   document.addEventListener("visibilitychange",()=>{
     if(document.hidden && raf){ cancelAnimationFrame(raf); raf=null; }
@@ -903,17 +813,14 @@ function phToJp(range){
 
 /* ==========================================================================
    4. API  —  JSONP for reads, text/plain POST for writes.
-   Apps Script cannot answer a CORS pre-flight, so we avoid triggering one.
    ========================================================================== */
 const API = () => (window.MANTEN_API||"").trim();
 
-/** True when config.js is missing, empty, or still holds a placeholder. */
 function apiMissing(){
   const u = API();
   return !u || u.indexOf("PASTE_")===0 || !/^https:\/\/script\.google\.com\/macros\/s\/.+\/exec$/.test(u);
 }
 
-/** One unmissable banner at the top of the page, rather than an error per section. */
 function showSetupBanner(){
   if($("setupBanner")) return;
   const d = document.createElement("div");
@@ -947,30 +854,21 @@ function apiGet(params){
 async function apiPost(payload, onRetry){
   if(apiMissing()) throw new Error("The website is not connected to the booking server. Check that config.js exists in the GitHub repository and holds your Apps Script /exec URL.");
 
-  // Retry a few times with growing gaps. The same submissionId travels with every
-  // attempt, and the server refuses to process one twice — so a retry can never
-  // create a second booking, even if the first attempt did in fact get through.
   const MAX = 4;
   let lastErr = null;
   for(let attempt=1; attempt<=MAX; attempt++){
     try{
       const res = await fetch(API(),{
         method:"POST",
-        // text/plain keeps this a "simple request" — no OPTIONS pre-flight, which
-        // Apps Script cannot answer. Do NOT change this to application/json.
         headers:{"Content-Type":"text/plain;charset=utf-8"},
         body: JSON.stringify(payload),
         redirect:"follow"
       });
       let data;
       try { data = await res.json(); }
-      catch(e){ throw new Error("BUSY"); }      // Apps Script returns HTML when overloaded
+      catch(e){ throw new Error("BUSY"); }
       if(data.ok) return data;
 
-      // Retry ONLY when the server explicitly says it is safe to. Never guess from the
-      // wording — a real rejection whose message happened to contain "try again" used to
-      // be retried four times and then reported as "the system is busy", which hid the
-      // actual reason from the student and from the admin.
       if(data.retryable !== true) throw new Error(data.error||"The booking could not be saved.");
       lastErr = new Error(data.error);
     }catch(e){
@@ -978,7 +876,7 @@ async function apiPost(payload, onRetry){
       lastErr = e;
     }
     if(attempt<MAX){
-      const wait = 1500*attempt + Math.random()*800;   // 1.5s, 3s, 4.5s, plus jitter
+      const wait = 1500*attempt + Math.random()*800;
       if(onRetry) onRetry(attempt, MAX);
       await new Promise(r=>setTimeout(r, wait));
     }
@@ -1031,30 +929,18 @@ async function boot(){
   }
 }
 
-/**
- * Turns a Google Drive link into something an <img> tag can actually load.
- * A normal Drive "share" link points at a web PAGE, not at the picture — which is why
- * pasting one straight in shows a broken-image icon. Direct URLs pass through untouched.
- * The Drive file must still be shared as "Anyone with the link".
- */
-/**
- * Only http(s) and mailto may ever reach an href or src. Without this, a "javascript:"
- * URL typed into the Bulletin MEDIAURL column would execute in every visitor's browser
- * when they clicked the attachment link — a stored cross-site-scripting hole that
- * escaping alone does not close, because the danger is the SCHEME, not the characters.
- */
 function safeUrl(u){
   u = String(u||"").trim();
   if(!u) return "";
   if(/^(https?:|mailto:)/i.test(u)) return u;
-  if(/^[A-Za-z][A-Za-z0-9+.-]*:/.test(u)) return "";   // any other scheme is rejected
-  return u;                                            // relative path, e.g. logo.png
+  if(/^[A-Za-z][A-Za-z0-9+.-]*:/.test(u)) return "";
+  return u;
 }
 
 function directImageUrl(u){
   u = String(u||"").trim();
   if(!u) return "";
-  if(!/^https?:\/\//i.test(u)) return u;            // a relative path such as logo.png
+  if(!/^https?:\/\//i.test(u)) return u;
   const m = u.match(/\/file\/d\/([A-Za-z0-9_-]{10,})/)
          || u.match(/[?&]id=([A-Za-z0-9_-]{10,})/);
   return m ? "https://lh3.googleusercontent.com/d/"+m[1] : safeUrl(u);
@@ -1064,8 +950,6 @@ function applySettings(s){
   if(s["COMPANY NAME"]){ $("companyName").textContent = s["COMPANY NAME"]; $("footName").textContent = s["COMPANY NAME"]; }
   if(s["COMPANY TAGLINE"]) $("tagline").textContent = s["COMPANY TAGLINE"];
 
-  // Logo: only swap in the image once we know it loaded. A bad link leaves the text
-  // mark in place instead of a broken-image icon.
   const logoUrl = directImageUrl(s["LOGO LINK"]);
   if(logoUrl){
     const img = new Image();
@@ -1081,15 +965,7 @@ function applySettings(s){
     const probe = new Image();
     probe.onload = ()=>{
       const h = document.querySelector(".hero");
-      // The URL is handed to CSS as a custom property instead of being written straight
-      // into an inline background shorthand. Inline styles beat stylesheet rules, so the
-      // old version made the dark overlay impossible to remove for phones. With the URL
-      // in a variable, the stylesheet decides: navy overlay on desktop, bare artwork on
-      // a phone. Nothing else about this function changes.
       h.style.setProperty("--hero-img", "url('"+heroUrl.replace(/'/g,"%27")+"')");
-      // Record the artwork's shape. On a phone the wording is placed BELOW the picture,
-      // and only the real ratio tells CSS how much room the picture needs. Without it
-      // the text lands on top of the "ManTen 100% PASS!" lettering.
       if(probe.naturalWidth > 0){
         h.style.setProperty("--hero-ratio", (probe.naturalHeight/probe.naturalWidth).toFixed(4));
       }
@@ -1105,7 +981,6 @@ function applySettings(s){
   const mail = s["COMPANY EMAIL ADDRESS"]||"";
   $("footMail").textContent = mail; $("footMail").href = mail?("mailto:"+mail):"#";
 
-  // Facebook link — read from AdminSetting, hidden entirely when the cell is blank.
   const fb = String(s["COMPANY FACEBOOK LINK"]||"").trim();
   const fbEl = $("footFb");
   if(fb && /^https?:\/\//i.test(fb)){
@@ -1120,11 +995,6 @@ function applySettings(s){
   }
 }
 
-/**
- * Promotions come from the Promotions tab and can be added, edited or switched off
- * at any time. If that tab is empty we fall back to the three intro lines in
- * AdminSetting, so the page is never blank.
- */
 function promoList(){
   const p = (STATE.boot && STATE.boot.promos) || [];
   if(p.length) return p;
@@ -1134,11 +1004,6 @@ function promoList(){
     .map(t=>({title:"", text:t, placement:"BOTH"}));
 }
 
-/**
- * The discount that currently applies to a given course, as far as the browser knows.
- * This is for DISPLAY ONLY — the server recalculates it when the booking is saved, so a
- * stale "3 places left" can never result in the wrong amount being recorded.
- */
 function liveDiscountFor(course){
   const promos = (STATE.boot && STATE.boot.promos) || [];
   for(const p of promos){
@@ -1202,14 +1067,10 @@ function renderBulletin(list){
   $("bulletinList").innerHTML = list.map(b=>{
     let media = "";
     const raw = b.url||"", t=(b.type||"").toLowerCase();
-    // A Drive share link points at a web PAGE, not the picture, so it must be converted
-    // the same way the logo and header image are. Without this, a pasted Drive link
-    // renders as a broken image.
     const u = directImageUrl(raw);
     const safeRaw = safeUrl(raw);
     if(u && /^https?:\/\//i.test(u)){
       if(t==="video"){
-        // Drive-hosted video cannot be played by a <video> tag; it needs Drive's player.
         const dm = raw.match(/\/file\/d\/([A-Za-z0-9_-]{10,})/) || raw.match(/[?&]id=([A-Za-z0-9_-]{10,})/);
         media = dm
           ? '<iframe src="https://drive.google.com/file/d/'+encodeURIComponent(dm[1])+'/preview" '+
@@ -1227,8 +1088,6 @@ function renderBulletin(list){
       '<div class="txt">'+sanitize(b.text||"")+'</div>'+link+'</div></article>';
   }).join("");
 
-  // If a picture still will not load - almost always because the Drive file is not shared
-  // as "Anyone with the link" - show a working link instead of a broken-image icon.
   $("bulletinList").querySelectorAll("img[data-fallback]").forEach(img=>{
     img.addEventListener("error", ()=>{
       const href = safeUrl(img.getAttribute("data-fallback"));
@@ -1258,7 +1117,6 @@ function visibleCourses(){
   if(!loc) return [];
   let rows = cat.filter(c=>c.location===loc);
   rows = rows.filter(c=> c.bis===bis || c.bis==="YES & NO" || c.bis==="YES AND NO" || !c.bis);
-  // If both a member and non-member row exist for the same level, keep the matching one.
   const seen = new Map();
   rows.forEach(c=>{
     const k = c.classType+"|"+c.level;
@@ -1317,9 +1175,6 @@ function renderCourses(){
 function renderSchedule(list){
   if(!list.length){ $("schedBody").innerHTML='<tr><td colspan="7">No classes scheduled yet.</td></tr>'; return; }
   $("schedBody").innerHTML = list.map(s=>{
-    // Philippine time on its own line, Japan time beneath it in grey. The old version
-    // joined them with a slash on one line, which wrapped mid-time on a phone
-    // ("10:00 AM - 11:30 / AM / 11:00 AM -") and made the column far too wide.
     const times = s.timeOptions.length
       ? s.timeOptions.map(t=>
           '<span class="tslot">'+
@@ -1333,19 +1188,12 @@ function renderSchedule(list){
       : (s.dateOptions.map(escapeHtml).join("<br>")||"—");
     const seats = (s.full?"0":s.remaining)+' / '+s.max;
 
-    // Seats now refer to the batch currently taking students, so name it. Without this
-    // a fresh batch looks like the seat count mysteriously reset.
     const batchTag = s.currentBatch ? ' <span class="chip">'+escapeHtml(s.currentBatch)+'</span>' : '';
 
-    // "Almost full" was an absolute test (5 or fewer seats left), so a brand-new EMPTY
-    // batch of a small class always read "Almost full" and could never read "Open".
-    // It is now relative to the class size as well.
     const nearlyFull = !s.full && s.remaining < s.max && s.remaining <= Math.max(1, Math.min(5, Math.ceil(s.max*0.25)));
     const status = s.full ? '<span class="chip full">Full</span>'
       : (nearlyFull ? '<span class="chip warn">Almost full</span>' : '<span class="chip ok">Open</span>');
 
-    // The .m-only spans are hidden on desktop and only appear on a phone, where the
-    // Start-options and Seats columns are folded into these two cells instead.
     return '<tr'+(s.full?' class="full"':'')+'>'+
       '<td>'+escapeHtml(s.classType)+'</td>'+
       '<td>'+escapeHtml(s.level)+
@@ -1385,7 +1233,6 @@ function startBooking(code){
     '<p class="hint">Taxes and transfer fees are already included.'+
       (d1?' The discount is confirmed by our server when you press Enrol.':'')+'</p>';
 
-  // Date and time options for this class
   const dSel=$("fDate"), tSel=$("fTime");
   const dates = (STATE.sched && STATE.sched.dateOptions.length) ? STATE.sched.dateOptions : [];
   const times = (STATE.sched && STATE.sched.timeOptions.length) ? STATE.sched.timeOptions : [];
@@ -1423,7 +1270,6 @@ $("fDate").onchange = ()=>{
   if(!v){ $("fDay").value=""; return; }
   const m=v.match(/^(\d{4})-(\d{2})-(\d{2})$/);
   if(!m){ $("fDay").value=""; return; }
-  // Build the date in LOCAL parts so the weekday never shifts by a timezone.
   const d=new Date(+m[1],+m[2]-1,+m[3]);
   $("fDay").value=["SUNDAY","MONDAY","TUESDAY","WEDNESDAY","THURSDAY","FRIDAY","SATURDAY"][d.getDay()];
 };
@@ -1436,7 +1282,6 @@ $("btnTo3").onclick = ()=>{
   step(3);
 };
 
-/* ---- image handling: shrink in the browser so uploads never time out ---- */
 async function readFileAsCompressed(file){
   const MAX_BYTES = 5*1024*1024;
   if(file.size > 20*1024*1024) throw new Error("That file is very large. Please choose one under 20 MB.");
@@ -1520,7 +1365,6 @@ function ageFrom(ymd){
   return a;
 }
 
-/* ---- submit ---- */
 $("btnSubmit").onclick = async ()=>{
   clearInvalid();
   if(!$("fTxn").value.trim()) return wizError("Enter the payment reference number from your receipt.","fTxn");
@@ -1533,7 +1377,7 @@ $("btnSubmit").onclick = async ()=>{
   const c=STATE.course;
   const payload = {
     submissionId: STATE.submissionId,
-    website:      $("website").value,          // honeypot
+    website:      $("website").value,
     lastName:  $("fLast").value.trim(),
     firstName: $("fFirst").value.trim(),
     middleName:$("fMiddle").value.trim(),
@@ -1581,7 +1425,6 @@ $("btnSubmit").onclick = async ()=>{
       srow("Amount to pay", money(cur, res.price!=null?res.price:c.price)) +
       srow("Status", "Awaiting payment verification");
 
-    // Be straight with the student if the offer ran out between loading and submitting.
     const expected = liveDiscountFor(c);
     if(expected && !gotDiscount){
       $("finalSummary").insertAdjacentHTML("beforebegin",
