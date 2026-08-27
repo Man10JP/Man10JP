@@ -301,12 +301,17 @@ footer a{color:#CFDCEA}
   background-size:auto, 100% auto;
   background-position:center, top center;
   background-repeat:no-repeat, no-repeat;
-  background-color:#fff;
-  min-height:calc(100vw * var(--hero-ratio, .42))}
+  background-color:#fff}
 
-/* The artwork is taller than the wording on a wide screen, so the wording is centred
-   in it rather than pinned to the top, which would leave a long empty gap below. */
-.hero.has-photo .hero-inner{display:flex;flex-direction:column;justify-content:center}
+/* The height has to sit on .hero-inner, not on .hero. Putting it on .hero made the
+   section tall but left this flex container at content height, so justify-content had
+   nothing to distribute and everything stayed pinned to the top with a long empty gap
+   underneath. With the height here (padding included, since box-sizing is border-box)
+   the wording and the two cards centre as one group against the artwork — text top-left,
+   cards lower-left, illustration right. */
+.hero.has-photo .hero-inner{
+  display:flex;flex-direction:column;justify-content:center;
+  min-height:calc(100vw * var(--hero-ratio, .42))}
 
 /* One line for the headline, two for the lede. 34px is three steps down from 46px,
    which keeps the sentence whole without pushing it into the bright half. */
@@ -394,7 +399,8 @@ footer a{color:#CFDCEA}
      the text always begins underneath it — at any phone width, with any artwork.
      The 0.5 fallback applies only if the image has not reported its size yet. */
   .hero.has-photo .hero-inner{
-    padding-top:calc(100vw * var(--hero-ratio, 0.5) + 18px)}
+    padding-top:calc(100vw * var(--hero-ratio, 0.5) + 18px);
+    min-height:0}     /* the desktop height rule moved onto this selector — cancel it here */
   .hero.has-photo #stars{display:none}     /* starfield would speckle the light artwork */
   .hero.has-photo::after{display:none}     /* the pink fade at the foot is not needed */
 
