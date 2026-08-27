@@ -294,9 +294,19 @@ footer a{color:#CFDCEA}
                     rgba(20,28,43,.32) 72%,
                     rgba(20,28,43,.10) 88%,
                     rgba(20,28,43,.05) 100%), var(--hero-img);
-  background-size:auto, cover;
-  background-position:center, center;
-  background-repeat:no-repeat, no-repeat}
+  /* "cover" filled the hero by enlarging the artwork and cutting whatever spilled over
+     — at 1512px that was HALF the picture, including the student's head. "100% auto"
+     shows the whole thing: full width, natural height, nothing cropped. The hero is
+     then made tall enough to hold it, using the ratio measured from the real file. */
+  background-size:auto, 100% auto;
+  background-position:center, top center;
+  background-repeat:no-repeat, no-repeat;
+  background-color:#fff;
+  min-height:calc(100vw * var(--hero-ratio, .42))}
+
+/* The artwork is taller than the wording on a wide screen, so the wording is centred
+   in it rather than pinned to the top, which would leave a long empty gap below. */
+.hero.has-photo .hero-inner{display:flex;flex-direction:column;justify-content:center}
 
 /* One line for the headline, two for the lede. 34px is three steps down from 46px,
    which keeps the sentence whole without pushing it into the bright half. */
@@ -359,6 +369,10 @@ footer a{color:#CFDCEA}
      to mobile and change a layout that has already passed testing. */
   .hero .hero-cta{display:flex}
   .cta-band{display:none}
+  /* Guard only. On a phone the wording sits BELOW the artwork, so the hero is always
+     taller than this anyway and the rule never binds — but stating it removes any
+     chance of the desktop min-height reaching the approved mobile layout. */
+  .hero.has-photo{min-height:0}
 
   /* ---- Hero on a phone: show the artwork as it is, no navy wash over it ----
      The illustration already has its own light background and lettering, so the dark
