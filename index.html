@@ -289,17 +289,22 @@ footer a{color:#CFDCEA}
      colour at 72% across, and 95% at the right edge. */
   background-image:linear-gradient(to right,
                     rgba(20,28,43,.90) 0%,
-                    rgba(20,28,43,.87) 35%,
-                    rgba(20,28,43,.76) 55%,
-                    rgba(20,28,43,.32) 72%,
-                    rgba(20,28,43,.10) 88%,
+                    rgba(20,28,43,.88) 38%,
+                    rgba(20,28,43,.79) 62%,
+                    rgba(20,28,43,.34) 78%,
+                    rgba(20,28,43,.10) 90%,
                     rgba(20,28,43,.05) 100%), var(--hero-img);
   /* "cover" filled the hero by enlarging the artwork and cutting whatever spilled over
      — at 1512px that was HALF the picture, including the student's head. "100% auto"
      shows the whole thing: full width, natural height, nothing cropped. The hero is
      then made tall enough to hold it, using the ratio measured from the real file. */
-  background-size:auto, 100% auto;
-  background-position:center, top center;
+  /* Showing the artwork at its full natural height made the hero 634-806px tall, which
+     dwarfed the wording and left the page feeling stretched. The illustration's top 10%
+     and bottom 10% are empty (brightness 246 and 253, almost no detail), so the hero is
+     sized to show the middle band instead. At 1024-1600px the whole drawing is still
+     visible; only at 1920px does it lose about 1% off the bottom. */
+  background-size:auto, cover;
+  background-position:center, center 52%;
   background-repeat:no-repeat, no-repeat;
   background-color:#fff}
 
@@ -311,20 +316,22 @@ footer a{color:#CFDCEA}
    cards lower-left, illustration right. */
 .hero.has-photo .hero-inner{
   display:flex;flex-direction:column;justify-content:center;
-  min-height:calc(100vw * var(--hero-ratio, .42))}
+  min-height:clamp(430px, 33.6vw, 560px)}
 
 /* One line for the headline, two for the lede. 34px is three steps down from 46px,
    which keeps the sentence whole without pushing it into the bright half. */
-.hero.has-photo h2{font-size:clamp(24px,2.6vw,34px);max-width:none;line-height:1.3}
-.hero.has-photo h2 .jp{font-size:clamp(14px,1.3vw,17px);margin-bottom:8px}
+/* Larger now that the hero is a sensible height — 34px looked small inside an 800px
+   band. Still one line at every width from 1024px up. */
+.hero.has-photo h2{font-size:clamp(26px,3vw,40px);max-width:none;line-height:1.28}
+.hero.has-photo h2 .jp{font-size:clamp(15px,1.5vw,19px);margin-bottom:9px}
 /* A pixel cap, not ch: 60ch measured 486px, just under what two lines need, so the
    sentence still broke to three. 580px holds it at two with room to spare, and is 52%
    of the content box — inside the dark part of the scrim. */
-.hero.has-photo p.lede{font-size:15px;line-height:1.65;max-width:580px;margin-top:12px}
+.hero.has-photo p.lede{font-size:16px;line-height:1.6;max-width:620px;margin-top:13px}
 
 /* The numbered points now close the hero, so they carry the bottom edge. Matching their
    width to the lede keeps a single clean left-aligned column down the whole block. */
-.hero.has-photo #introPoints{max-width:580px;margin-top:20px}
+.hero.has-photo #introPoints{max-width:620px;margin-top:20px}
 .hero.has-photo .point{background:rgba(255,255,255,.14);border-color:rgba(255,255,255,.22)}
 
 /* The two hero buttons live below the hero on desktop, in the white band above the
