@@ -264,6 +264,16 @@ tr.full td{color:var(--ink-faint);background:#FBFAF9}
 .tjp{display:block;white-space:nowrap;font-size:12.5px;color:var(--ink-faint);font-variant-numeric:tabular-nums}
 .m-only{display:none}
 
+.qr-pay{display:flex;gap:16px;align-items:center;background:var(--sage);
+  border:1px solid #C8E6D3;border-radius:var(--r-md);padding:16px;margin-top:14px}
+.qr-pay img{width:132px;height:132px;object-fit:contain;background:#fff;border-radius:10px;
+  border:1px solid var(--grey-line);flex:none}
+.qr-pay strong{display:block;font-size:14px;margin-bottom:4px;color:var(--sage-ink)}
+.qr-pay p{font-size:13px;color:var(--ink-soft);margin-bottom:8px}
+.qr-pay a{font-size:13px;font-weight:600}
+@media (max-width:560px){.qr-pay{flex-direction:column;align-items:flex-start}
+  .qr-pay img{width:112px;height:112px}}
+
 /* ---------- notices ---------- */
 .notice{border-radius:var(--r-sm);padding:13px 15px;font-size:14px;margin:14px 0;border:1px solid}
 .notice.info{background:var(--sky);border-color:#C9E0F4;color:#1B4F7C}
@@ -728,6 +738,21 @@ footer a{color:#CFDCEA}
             the class code <b id="chatCode">—</b>. We reply with a QR code. Pay at a Japanese convenience store,
             or by GCash, Maya or GoTyme, then come back and finish this form.
           </div>
+
+          <!-- QR Ph code: Philippines bookings only, same condition as the GCash field
+               below. Empty and hidden until startBooking() fills it in — mirrors the
+               logo/header pattern, so a missing or broken image never shows a red X,
+               it just quietly stays hidden. -->
+          <div class="qr-pay" id="qrPayBox" hidden>
+            <img id="qrPayImg" alt="QR Ph payment code" loading="lazy">
+            <div>
+              <strong>Scan to pay instantly</strong>
+              <p>Open GCash, Maya, or your bank app, choose <b>Scan QR</b>, and pay this code directly —
+                 no need to message us first.</p>
+              <a id="qrPayDownload" download="MANTEN-QRPh.png">Save this QR code</a>
+            </div>
+          </div>
+
           <div class="summary" id="paySummary"></div>
 
           <div class="field mt">
@@ -1144,6 +1169,11 @@ function applySettings(s){
     fbEl.hidden = true;
   }
   if(s["GOOGLE CHAT EMAIL"]) $("chatEmail").textContent = s["GOOGLE CHAT EMAIL"];
+
+  // QR Ph payment code — optional. Add a row named PAYMENT QR CODE LINK to
+  // AdminSetting with an image filename or URL, and this fills itself in. Leave the
+  // row blank or absent and the box simply never appears; nothing else is affected.
+  STATE.qrPayUrl = directImageUrl(s["PAYMENT QR CODE LINK"] || "");
   if(String(s["ENROLMENT OPEN"]||"TRUE").toUpperCase()==="FALSE"){
     $("courseList").innerHTML = '<div class="notice warn"><strong>Enrolment is closed right now</strong>'+
       escapeHtml(s["MAINTENANCE MESSAGE"]||"Please check back soon or contact us directly.")+'</div>';
@@ -1401,6 +1431,23 @@ function startBooking(code){
                        : Date.now().toString(36)+Math.random().toString(36).slice(2));
   $("chatCode").textContent = code;
   $("gcashWrap").hidden = c.location!=="PHILIPPINES";
+
+  // Same condition as the GCash field just above: QR Ph is a Philippine payment rail,
+  // so it is shown only for Philippines bookings. Japan continues to pay by konbini.
+  const qrBox = $("qrPayBox"), qrImg = $("qrPayImg"), qrDl = $("qrPayDownload");
+  // safeUrl on top of directImageUrl: an <img src> with a javascript: URL is inert in
+  // modern browsers, but the DOWNLOAD LINK's href is not — clicking it would run the
+  // URL as a script. safeUrl keeps only http(s)/mailto/relative paths, matching the
+  // same guard already used for bulletin attachments.
+  const qrSafe = safeUrl(STATE.qrPayUrl);
+  if(qrSafe && c.location==="PHILIPPINES"){
+    qrImg.onload  = ()=>{ qrBox.hidden = false; };
+    qrImg.onerror = ()=>{ qrBox.hidden = true; };   // never show a broken-image icon
+    qrImg.src = qrSafe;
+    qrDl.href = qrSafe;
+  } else {
+    qrBox.hidden = true;
+  }
 
   const d1 = liveDiscountFor(c);
   $("courseSummary").innerHTML =
