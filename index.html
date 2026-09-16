@@ -848,6 +848,20 @@ const el = (t,c,h)=>{const n=document.createElement(t); if(c)n.className=c; if(h
 const escapeHtml = s => String(s===null||s===undefined?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));
 const money = (cur,n)=> (cur==="JPY"?"¥":"₱") + Number(n||0).toLocaleString("en-US");
 
+/**
+ * Existing classes store DURATION HOURS as 1.5, 4, etc. and read fine as "1.5 h".
+ * A 45-minute trial lesson would be stored as 0.75 and read as "0.75 h / lesson" —
+ * technically correct but not how a person actually says it. Anything under one full
+ * hour is shown in minutes instead; one hour and above is completely unchanged, so
+ * every class that already displays correctly keeps displaying exactly as it does now.
+ */
+function lessonLength(hours){
+  const h = Number(hours || 0);
+  if (h <= 0) return "";
+  if (h < 1) return Math.round(h * 60) + " min";
+  return h + " h";
+}
+
 /** Allowlist sanitiser for bulletin text written by an admin in the sheet. */
 function sanitize(html){
   const ok = new Set(["B","I","U","EM","STRONG","BR","P","UL","OL","LI","A","SPAN","H4"]);
@@ -1354,7 +1368,7 @@ function renderCourses(){
     const seats = s ? (s.full ? '<span class="chip full">Batch full — next batch opens</span>'
                               : '<span class="chip ok">'+s.remaining+' of '+s.max+' seats left</span>')
                     : '<span class="chip">New batch</span>';
-    const dur = [c.hours?c.hours+" h / lesson":"", c.weeks?c.weeks+" lessons a month":"", c.months?c.months+" months":""]
+    const dur = [c.hours?lessonLength(c.hours)+" / lesson":"", c.weeks?c.weeks+" lessons a month":"", c.months?c.months+" months":""]
                 .filter(Boolean).map(t=>'<span class="chip">'+escapeHtml(t)+'</span>').join("");
     return '<article class="card '+tints[i%3]+'">'+
       '<span class="lvl">'+escapeHtml(c.classType)+'</span>'+
@@ -1453,7 +1467,7 @@ function startBooking(code){
   $("courseSummary").innerHTML =
     srow("Course", c.classType) + srow("Level", c.level) + srow("Class code", c.classCode) +
     srow("Studying from", c.location==="JAPAN"?"Japan":"Philippines") +
-    srow("Lesson length", (c.hours||1.5)+" hours") +
+    srow("Lesson length", lessonLength(c.hours||1.5)) +
     (c.months? srow("Programme length", c.months+" months") : "") +
     (d1 ? srow("Regular price", money(c.currency,c.price)) +
           srow(d1.promo.title||"Promotion", "− "+money(c.currency,d1.amount)) : "") +
